@@ -3,6 +3,8 @@ CLOCK      = 9830400
 PROGRAMMER = -c usbtiny -P usb
 OBJECTS    = ./proj/main.c
 FUSES      = -U hfuse:w:0xd9:m -U lfuse:w:0xe0:m
+BIN_FOLDER = ./bin
+PROJ_FOLDER = ./proj
 
 # Fuse Low Byte = 0xe0   Fuse High Byte = 0xd9   Fuse Extended Byte = 0xff
 # Bit 7: CKDIV8  = 1     Bit 7: RSTDISBL  = 1    Bit 7:
@@ -39,10 +41,10 @@ all:	main.hex
 # compatibility define the file type manually.
 
 .c.s:
-	$(COMPILE) -S $< -o $@
+	$(COMPILE) -S $< -o $(BIN_FOLDER)/$@
 
 flash:	all
-	$(AVRDUDE) -U flash:w:main.hex:i
+	$(AVRDUDE) -U flash:w:$(BIN_FOLDER)/main.hex:i
 
 fuse:
 	$(AVRDUDE) $(FUSES)
@@ -52,25 +54,32 @@ install: flash fuse
 
 # if you use a bootloader, change the command below appropriately:
 load: all
-	bootloadHID main.hex
+	bootloadHID $(BIN_FOLDER)/main.hex
 
 clean:
-	rm -f main.hex main.elf $(OBJECTS)
+	rm $(BIN_FOLDER)/*
 
 # file targets:
 main.elf: $(OBJECTS)
-	$(COMPILE) -o main.elf $(OBJECTS)
+	$(COMPILE) -o $(BIN_FOLDER)/main.elf $(OBJECTS)
 
 main.hex: main.elf
-	rm -f main.hex
-	avr-objcopy -j .text -j .data -O ihex main.elf main.hex
-	avr-size --format=avr --mcu=$(DEVICE) main.elf
+	rm -f $(BIN_FOLDER)/main.hex
+	avr-objcopy -j .text -j .data -O ihex $(BIN_FOLDER)/main.elf $(BIN_FOLDER)/main.hex
+	avr-size --format=avr --mcu=$(DEVICE) $(BIN_FOLDER)/main.elf
 # If you have an EEPROM section, you must also create a hex file for the
 # EEPROM and add it to the "flash" target.
-
+I2C: ./proj/I2C_TEST.c
+	$(COMPILE) -o $(BIN_FOLDER)/I2C.elf ./proj/I2C_TEST.c
+	rm -f $(BIN_FOLDER)/I2C.hex
+	avr-objcopy -j .text -j .data -O ihex $(BIN_FOLDER)/I2C.elf $(BIN_FOLDER)/I2C.hex
+	avr-size --format=avr --mcu=$(DEVICE) $(BIN_FOLDER)/I2C.elf
+	$(AVRDUDE) -U flash:w:$(BIN_FOLDER)/I2C.hex:i
 # Targets for code debugging and analysis:
+FLASH_I2C: 
+	$(AVRDUDE) -U flash:w:$(BIN_FOLDER)/I2C.hex:i
 disasm:	main.elf
-	avr-objdump -d main.elf
+	avr-objdump -d $(BIN_FOLDER)/main.elf
 
 cpp:
 	$(COMPILE) -E main.c

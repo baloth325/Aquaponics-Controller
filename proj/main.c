@@ -40,12 +40,9 @@ void setup()
     #else
     #endif 
 
-    DDRC |= 1 << DDC0;          // Set PORTC bit 0 for output
-    DDRC |= 1 << DDC1;
-    DDRC |= 1 << DDC2;
-    DDRC |= 1 << DDC3;
-    DDRC |= 1 << DDC4;
-    DDRC |= 1 << DDC5;
+    DDRC |= 1 << DDC0;          // Set PORTC bit 0 for output LED
+    DDRB |= 1 << DDB1;          // Set PORTB bit 0 for output PUMP
+    PORTB |= 1 << PB1;          //Turn on PUMP
     return;
 }
 void sleep_cycles(int sleepCycles)
