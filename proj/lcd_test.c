@@ -55,57 +55,57 @@ void loop()
  * @param SDA Serial data pin assignment.
  * @return none
  */
-void initLCD_I2C(uint8_t SCL, uint8_t SDA)
-{
-  _interface = I2C;
+// void initLCD_I2C(uint8_t SCL, uint8_t SDA)
+// {
+//   _interface = I2C;
 
-  // Store pin assigmnents globally
-  _SCL = SCL;
-  _SDA = SDA;
+//   // Store pin assigmnents globally
+//   _SCL = SCL;
+//   _SDA = SDA;
 
-  // Set IO modes
-  pinMode(SCL, OUTPUT);
-  pinMode(SDA, OUTPUT);
+//   // Set IO modes
+//   pinMode(SCL, OUTPUT);
+//   pinMode(SDA, OUTPUT);
   
-  // Set starting pin states
-  digitalWrite(SCL, HIGH);
-  digitalWrite(SDA, HIGH);
+//   // Set starting pin states
+//   digitalWrite(SCL, HIGH);
+//   digitalWrite(SDA, HIGH);
   
-  // Wait for display to power ON
-  delay(STARTUP_DELAY);
-  clearScreen();
-}
+//   // Wait for display to power ON
+//   delay(STARTUP_DELAY);
+//   clearScreen();
+// }
 
-/**
- * @brief Initialize selected IO ports for SPI
- * 
- * @param SCL Serial clock pin assignment.
- * @param SDI Serial data pin assignment.
- * @param CS Chip/Slave select pin assignment.
- * @return none
- */
-void initLCD_SPI(uint8_t SCL, uint8_t SDI, uint8_t CS)
-{
-  _interface = SPI;
+// /**
+//  * @brief Initialize selected IO ports for SPI
+//  * 
+//  * @param SCL Serial clock pin assignment.
+//  * @param SDI Serial data pin assignment.
+//  * @param CS Chip/Slave select pin assignment.
+//  * @return none
+//  */
+// void initLCD_SPI(uint8_t SCL, uint8_t SDI, uint8_t CS)
+// {
+//   _interface = SPI;
 
-  // Store pin assignments globally
-  _SCL = SCL;
-  _SDI = SDI;
-  _CS = CS;
+//   // Store pin assignments globally
+//   _SCL = SCL;
+//   _SDI = SDI;
+//   _CS = CS;
 
-  // Set IO modes
-  pinMode(CS, OUTPUT);
-  pinMode(SCL, OUTPUT);
-  pinMode(SDI, OUTPUT);
+//   // Set IO modes
+//   pinMode(CS, OUTPUT);
+//   pinMode(SCL, OUTPUT);
+//   pinMode(SDI, OUTPUT);
 
-  // Set pin states
-  digitalWrite(CS, HIGH);
-  digitalWrite(SCL, HIGH);
+//   // Set pin states
+//   digitalWrite(CS, HIGH);
+//   digitalWrite(SCL, HIGH);
 
-  // Wait for display to power ON
-  delay(STARTUP_DELAY);
-  clearScreen();
-}
+//   // Wait for display to power ON
+//   delay(STARTUP_DELAY);
+//   clearScreen();
+// }
 
 /**
  * @brief Initalize selected IO ports for RS232.
@@ -178,110 +178,92 @@ void stopBit()
  * 
  * @return none
  */
-void startCondition()
-{
-  clearSDA();
-  clearSCL();
-}
+// void startCondition()
+// {
+//   clearSDA();
+//   clearSCL();
+// }
 
-/**
- * @brief Send a stop condition on the I2C bus.
- * 
- * @return none
- */
-void stopCondition()
-{
-  setSCL();
-  setSDA();
-}
+// *
+//  * @brief Send a stop condition on the I2C bus.
+//  * 
+//  * @return none
+ 
+// void stopCondition()
+// {
+//   setSCL();
+//   setSDA();
+// }
 
 /**
  * @brief Set the SDA/SDI pin high on the I2C/SPI bus.
  * 
  * @return none
  */
-void setSDA()
-{
-  digitalWrite(_SDA, HIGH);
-  delayMicroseconds(I2C_DELAY);
-}
+// void setSDA()
+// {
+//   digitalWrite(_SDA, HIGH);
+//   delayMicroseconds(I2C_DELAY);
+// }
 
-/**
- * @brief Clear the SDA/SDI pin on the I2C/SPI bus.
- * 
- * @return none
- */
-void clearSDA()
-{
-  digitalWrite(_SDA, LOW);
-  delayMicroseconds(I2C_DELAY);
-}
+// *
+//  * @brief Clear the SDA/SDI pin on the I2C/SPI bus.
+//  * 
+//  * @return none
+ 
+// void clearSDA()
+// {
+//   digitalWrite(_SDA, LOW);
+//   delayMicroseconds(I2C_DELAY);
+// }
 
 /**
  * @brief Set the SCL/SCK pin on the I2C/SPI bus.
  * 
  * @return none
  */
-void setSCL()
-{
-  digitalWrite(_SCL, HIGH);
-  if(_interface == I2C)
-  {
-    delayMicroseconds(I2C_DELAY);
-  }
-}
+// void setSCL()
+// {
+//   digitalWrite(_SCL, HIGH);
+//   if(_interface == I2C)
+//   {
+//     delayMicroseconds(I2C_DELAY);
+//   }
+// }
 
-/**
- * @brief Clear the SCL/SCK pin on the I2C/SPI bus.
- * 
- * @return none
- */
-void clearSCL()
-{
-  digitalWrite(_SCL, LOW);
-  if(_interface == I2C)
-  {
-    delayMicroseconds(I2C_DELAY);
-  }
-}
+// *
+//  * @brief Clear the SCL/SCK pin on the I2C/SPI bus.
+//  * 
+//  * @return none
+ 
+// void clearSCL()
+// {
+//   digitalWrite(_SCL, LOW);
+//   if(_interface == I2C)
+//   {
+//     delayMicroseconds(I2C_DELAY);
+//   }
+// }
 
 /**
  * @brief Set the I2C bus to write mode.
  * 
  * @return none
  */
-void setWriteMode()
-{
-  putData_I2C((SLAVE_ADDRESS << 1) | 0x00);
-}
+// void setWriteMode()
+// {
+//   putData_I2C((SLAVE_ADDRESS << 1) | 0x00);
+// }
 
-/**
- * @brief Set the I2C bus to read mode.
- * 
- * @return none
- */
-void setReadMode()
-{
-  putData_I2C((SLAVE_ADDRESS << 1) | 0x01);
-}
-
-/**
- * @brief Check if an ACK/NACK was received on the I2C bus.
- * 
- * @return uint8_t The ACK/NACK read from the display.
- */
-uint8_t getACK()
-{
-  pinMode(_SDA, INPUT);
-  setSCL();
-
-  uint8_t ACK = digitalRead(_SDA);
-
-  pinMode(_SDA, OUTPUT);
-  clearSCL();
-
-  return ACK;
-}
+// *
+//  * @brief Set the I2C bus to read mode.
+//  * 
+//  * @return none
+ 
+// void setReadMode()
+// {
+//   putData_I2C((SLAVE_ADDRESS << 1) | 0x01);
+// }
 
 /**
  * @brief Write 1 byte of data to the display.
@@ -335,46 +317,6 @@ void writeString(unsigned char* data)
  * @brief Clock each bit of data on the I2C bus and read ACK.
  * 
  * @param data Byte of data to be put on the I2C data bus.
- * @return none
- */
-void putData_I2C(uint8_t data)
-{
-  for(int i = 7; i >= 0; i--)
-  {
-    digitalWrite(_SDA, (data >> i) & 0x01);
-
-    setSCL();
-    clearSCL();
-  }
-
-  getACK();
-}
-
-/**
- * @brief Put each bit of data on the SPI data bus.
- * This function sends MSB (D7) first and LSB (D0) last.
- * 
- * @param data Byte of data to be put on the SPI data bus.
- * @return none
- */
-void putData_SPI(uint8_t data)
-{
-  // Write data byte MSB first -> LSB last
-  for(int i = 7; i >= 0; i--)
-  {
-    clearSCL();
-
-    digitalWrite(_SDI, (data >> i) & 0x01);
-    
-    setSCL();
-  }
-}
-
-/**
- * @brief Put each bit of data on the RS232 data bus.
- * This function sends LSB (D0) first and MSB (D7) last.
- * 
- * @param data Byte of data to be put on the RS232 data bus.
  * @return none
  */
 void putData_RS232(uint8_t data)
