@@ -42,7 +42,7 @@ void setup()
 
     DDRC |= 1 << DDC0;          // Set PORTC bit 0 for output LED
     DDRB |= 1 << DDB1;          // Set PORTB bit 0 for output PUMP
-    PORTB |= 1 << PB1;          //Turn on PUMP
+    //PORTB |= 1 << PB1;          //Turn on PUMP
     return;
 }
 void sleep_cycles(int sleepCycles)

@@ -19,11 +19,7 @@ uint8_t _TX; // 2
 //I2C Interface
 uint8_t _SDA; // 4
 
-enum Interface{
-  I2C,
-  SPI,
-  RS232
-};
+typedef enum {I2C,SPI,RS232} Interface;
 
 Interface _interface;
 
@@ -48,6 +44,12 @@ void loop()
 
 }
 
+int main(void)
+{
+  setup();
+
+  return 0;
+}
 /**
  * @brief Initialize selected IO ports for I2C.
  * 
