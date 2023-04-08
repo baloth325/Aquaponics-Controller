@@ -79,7 +79,7 @@ I2C: ./proj/I2C_TEST.c
 FLASH_I2C: 
 	$(AVRDUDE) -U flash:w:$(BIN_FOLDER)/I2C.hex:i
 LCD_TEST:
-	$(COMPILE) -o $(BIN_FOLDER)/lcd.elf ./proj/lcd_test.c
+	$(COMPILE) -o $(BIN_FOLDER)/lcd.elf ./proj/RS232_test.c
 	rm -f $(BIN_FOLDER)/lcd.hex
 	avr-objcopy -j .text -j .data -O ihex $(BIN_FOLDER)/lcd.elf $(BIN_FOLDER)/lcd.hex
 	avr-size --format=avr --mcu=$(DEVICE) $(BIN_FOLDER)/lcd.elf
