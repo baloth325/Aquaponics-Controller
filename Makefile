@@ -78,12 +78,18 @@ I2C: ./proj/I2C_TEST.c
 # Targets for code debugging and analysis:
 FLASH_I2C: 
 	$(AVRDUDE) -U flash:w:$(BIN_FOLDER)/I2C.hex:i
-LCD_TEST:
+RS232_TEST:
 	$(COMPILE) -o $(BIN_FOLDER)/lcd.elf ./proj/RS232_test.c
 	rm -f $(BIN_FOLDER)/lcd.hex
 	avr-objcopy -j .text -j .data -O ihex $(BIN_FOLDER)/lcd.elf $(BIN_FOLDER)/lcd.hex
 	avr-size --format=avr --mcu=$(DEVICE) $(BIN_FOLDER)/lcd.elf
 	$(AVRDUDE) -U flash:w:$(BIN_FOLDER)/lcd.hex:i
+WATER_SWITCH:
+	$(COMPILE) -o $(BIN_FOLDER)/water_switch.elf ./proj/water_level_switch_test.c
+	rm -f $(BIN_FOLDER)/water_switch.hex
+	avr-objcopy -j .text -j .data -O ihex $(BIN_FOLDER)/water_switch.elf $(BIN_FOLDER)/water_switch.hex
+	avr-size --format=avr --mcu=$(DEVICE) $(BIN_FOLDER)/water_switch.elf
+	$(AVRDUDE) -U flash:w:$(BIN_FOLDER)/water_switch.hex:i
 disasm:	main.elf
 	avr-objdump -d $(BIN_FOLDER)/main.elf
 
