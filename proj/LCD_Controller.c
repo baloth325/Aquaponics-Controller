@@ -31,54 +31,75 @@ char str2[] = ">> USC EE459L <<";
 char str3[] = ">> at328-6.c <<<";
 char str4[] = "-- April 11, 2011 --";
 
-#define FOSC 7372800        // Clock frequency
-#define BAUD 9600              // Baud rate used by the LCD
-#define MYUBRR FOSC/16/BAUD-1   // Value for UBRR0 register
+#define FOSC 7372800UL		// Clock frequency
+#define BAUD 9600UL              // Baud rate used by the LCD
+#define MYUBRR 51   // Value for UBRR0 register
 
+/*
 int main(void) {
 
-    sci_init();                 // Initialize the SCI port
+    
     
     lcd_init();                 // Initialize the LCD
 
-    sci_out(0xfe);
-    sci_out(0x51);
-    sci_out(0x41)
-    lcd_stringout(str1);        // Print string on line 1
-    //lcd_moveto(1, 2);
-    //lcd_stringout(str2);        // Print string on line 2
-    //lcd_moveto(2, 2);
-    //lcd_stringout(str3);        // Print string on line 3
-    //lcd_moveto(3, 0);
-    //lcd_stringout(str4);        // Print string on line 4
+    lcd_moveto(0, 0);
+    lcd_stringout("I hate this LCD");        // Print string on line 1
+    lcd_moveto(1, 2);
+    lcd_stringout(str2);        // Print string on line 2
+    lcd_moveto(2, 2);
+    lcd_stringout(str3);        // Print string on line 3
+    lcd_moveto(3, 3);
+    lcd_stringout(str4);        // Print string on line 4
 
     while (1) {                 // Loop forever
     }
 
-    return 0;   /* never reached */
-}
+    return 0;   // never reached 
+}*/
 
 /*
   lcd_init - Initialize the LCD
 */
-void lcd_init()
+extern void lcd_init()
 {
+    sci_init();                 // Initialize the SCI port
     _delay_ms(250);             // Wait 500msec for the LCD to start up
     _delay_ms(250);
-    sci_out(0xfe);              // Clear the screen
+    sci_out(0xFE);              // Clear the screen
     sci_out(0x51);
+    sci_out(0xFE);              // Clear the screen
+    sci_out(0x53);
+    sci_out(0b0111);
 }
 
 /*
   moveto - Move the cursor to the row and column given by the arguments.
   Row is 0 or 1, column is 0 - 15.
 */
-void lcd_moveto(unsigned char row, unsigned char col)
+extern void lcd_moveto(unsigned char row, unsigned char col)
 {
     sci_out(0xfe);              // Set the cursor position
     sci_out(0x45);
-    sci_out(col + 1);
-    sci_out(row + 1);
+    if(row == 0)
+    {
+      sci_out(0x00 + col);
+    }
+    else if(row == 1)
+    {
+      sci_out(0x40 + col);
+    }
+    else if(row == 2)
+    {
+      sci_out(0x14 + col);
+    }
+    else if(row == 3)
+    {
+      sci_out(0x54 + col);
+    }
+    else
+    {
+      sci_out(0x00);
+    }
 }
 
 
@@ -86,7 +107,7 @@ void lcd_moveto(unsigned char row, unsigned char col)
   lcd_stringout - Print the contents of the character string "str"
   at the current cursor position.
 */
-void lcd_stringout(char *str)
+extern void lcd_stringout(char *str)
 {
     sci_outs(str);              // Output the string
 }
@@ -97,10 +118,17 @@ void lcd_stringout(char *str)
   sci_init - Initialize the SCI port
 */
 void sci_init(void) {
-    UBRR0 = MYUBRR;          // Set baud rate
+    //OSCCAL |= 0x73;
+    UBRR0 = 0;
+    UCSR0C |= (1<<UMSEL00); //Sets to synchronous master mode
+    DDRD |= (1<<DDD4);
     UCSR0B |= (1 << TXEN0);  // Turn on transmitter
-    UCSR0C = (3 << UCSZ00);  // Set for asynchronous operation, no parity, 
+    UCSR0C |= (3 << UCSZ00);  // Set for asynchronous operation, no parity, 
                              // one stop bit, 8 data bits
+    UBRR0H = (unsigned char)(MYUBRR>>8);
+    UBRR0L = (unsigned char)MYUBRR;
+    UBRR0 = MYUBRR;
+    //UBRR0 = MYUBRR;          // Set baud rate
 }
 
 /*
@@ -119,7 +147,6 @@ void sci_out(char ch)
 void sci_outs(char *s)
 {
     char ch;
-
     while ((ch = *s++) != '\0')
         sci_out(ch);
 }

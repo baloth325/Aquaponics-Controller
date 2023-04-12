@@ -79,13 +79,9 @@ I2C: ./proj/I2C_TEST.c
 FLASH_I2C: 
 	$(AVRDUDE) -U flash:w:$(BIN_FOLDER)/I2C.hex:i
 RS232_TEST:
-	$(COMPILE) -o $(BIN_FOLDER)/lcd.elf ./proj/RS232_test.c
-	rm -f $(BIN_FOLDER)/lcd.hex
-	avr-objcopy -j .text -j .data -O ihex $(BIN_FOLDER)/lcd.elf $(BIN_FOLDER)/lcd.hex
-	avr-size --format=avr --mcu=$(DEVICE) $(BIN_FOLDER)/lcd.elf
-	$(AVRDUDE) -U flash:w:$(BIN_FOLDER)/lcd.hex:i
-WATER_SWITCH:
-	$(COMPILE) -o $(BIN_FOLDER)/water_switch.elf ./proj/water_level_switch_test.c
+	$(COMPILE) -o $(BIN_FOLDER)/lcd.elf ./proj/LCD_Controller.c
+WATER_SWITCH: RS232_TEST
+	$(COMPILE) $(BIN_FOLDER)/lcd.elf ./proj/water_level_switch_test.c -o $(BIN_FOLDER)/water_switch.elf  
 	rm -f $(BIN_FOLDER)/water_switch.hex
 	avr-objcopy -j .text -j .data -O ihex $(BIN_FOLDER)/water_switch.elf $(BIN_FOLDER)/water_switch.hex
 	avr-size --format=avr --mcu=$(DEVICE) $(BIN_FOLDER)/water_switch.elf

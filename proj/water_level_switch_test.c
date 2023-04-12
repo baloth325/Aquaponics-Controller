@@ -1,6 +1,7 @@
 #include <avr/io.h>
 #include <stdio.h>
 #include <util/delay.h>
+#include "C:\Users\Seth\ee459\Aquaponics-Controller\proj\LCD_Controller.c"
 
 #define F_CPU 16000000UL
 #define BAUD 9600
@@ -8,6 +9,7 @@
 
 int main(void)
 {
+    lcd_init()
     // Set PB2 as input
     DDRB &= ~(1<<PB2);
 
@@ -26,12 +28,12 @@ int main(void)
         if (bit_is_clear(PINB, PB2))
         {
             // Water level switch is closed
-            printf("Water level switch closed\n");
+            lcd_stringout("Water level switch closed\n");
         }
         else
         {
             // Water level switch is open
-            printf("Water level switch open\n");
+            lcd_stringout("Water level switch open\n");
         }
 
         _delay_ms(500); // Wait for 500 milliseconds before reading again

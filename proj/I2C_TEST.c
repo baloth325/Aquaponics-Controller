@@ -1,7 +1,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 
-#define F_CPU 16000000UL
+#define F_CPU 7372800UL
 #define BAUD_RATE 9600UL
 
 #define I2C_ADDR 0x50 // default I2C address
