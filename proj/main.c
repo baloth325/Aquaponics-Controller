@@ -19,8 +19,9 @@
 *************************************************************/
 
 #include <avr/io.h>
-
-
+#include "LCD_Controller.c"
+#include "pump_Controller.c"
+#include "LED_Controller.c"
 //#define CLOCK_PRESCALAR 0x00    //must be in hex 2,4,8,16,32,64,128,or 256 following page60 in Atmel Documentation: Comment line if no prescalar desired
 
 
@@ -33,16 +34,16 @@
 
 void setup()
 {
-
     #ifdef CLOCK_PRESCALAR  // auto assigns clock prescalar
     CLKPR = 0x80;
     CLKPR = CLOCK_PRESCALAR;
     #else
     #endif 
 
-    DDRC |= 1 << DDC0;          // Set PORTC bit 0 for output LED
-    DDRB |= 1 << DDB1;          // Set PORTB bit 0 for output PUMP
-    //PORTB |= 1 << PB1;          //Turn on PUMP
+    pump_init();
+    lcd_init();
+    LED_init();
+
     return;
 }
 void sleep_cycles(int sleepCycles)
@@ -59,9 +60,6 @@ int main(void)
     setup();
 
     while (1) {
-
-	PORTC |= 1 << PC0;      // Set PC0 to a 1
-	PORTC &= ~(1 << PC0);   // Set PC0 to a 0
 
     }
 

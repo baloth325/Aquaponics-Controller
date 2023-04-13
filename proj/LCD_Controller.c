@@ -31,9 +31,21 @@ char str2[] = ">> USC EE459L <<";
 char str3[] = ">> at328-6.c <<<";
 char str4[] = "-- April 11, 2011 --";
 
-#define FOSC 7372800UL		// Clock frequency
-#define BAUD 9600UL              // Baud rate used by the LCD
-#define MYUBRR 51   // Value for UBRR0 register
+
+#define MYUBRR 51
+#ifdef MYUBRR 
+
+#else
+  #ifdef CLOCK_SPEED
+    #define FOSC CLOCK_SPEED
+  #else
+    #define FOSC 8000000UL		// Clock frequency
+  #endif
+  #define BAUD 9600UL              // Baud rate used by the LCD
+  #define MYUBRR FOSC/16/BAUD-1   // Value for UBRR0 register
+#endif
+//
+
 
 /*
 int main(void) {

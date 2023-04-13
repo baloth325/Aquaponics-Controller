@@ -1,23 +1,14 @@
 #include <avr/io.h>
 
-
-typedef struct{
-int pinNum;
-bool state;
-} pumpController;
-
-
-
-int main(void)
+void pump_init()
 {
-
-    while (1) {
-
-	PORTC |= 1 << PC0;      // Set PC0 to a 1
-	PORTC &= ~(1 << PC0);   // Set PC0 to a 0
-
-    }
-
-    return 0;   /* never reached */
+    DDRB |= 1 << DDB1;
 }
-
+void turn_on_pump()
+{
+    PORTB |= 1 << PB1;
+}
+void turn_off_pump()
+{
+    PORTB &= ~(1 << PB1);
+}
