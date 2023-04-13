@@ -21,6 +21,7 @@
 void lcd_init(void);
 void lcd_moveto(unsigned char, unsigned char);
 void lcd_stringout(char *);
+void lcd_clear();
 
 void sci_init(void);
 void sci_out(char);
@@ -79,7 +80,7 @@ extern void lcd_init()
     _delay_ms(250);
     sci_out(0xFE);              // Clear the screen
     sci_out(0x51);
-    sci_out(0xFE);              // Clear the screen
+    sci_out(0xFE);              // Change brightness
     sci_out(0x53);
     sci_out(0b0111);
 }
@@ -88,6 +89,11 @@ extern void lcd_init()
   moveto - Move the cursor to the row and column given by the arguments.
   Row is 0 or 1, column is 0 - 15.
 */
+extern void lcd_clear()
+{
+    sci_out(0xFE);              // Clear the screen
+    sci_out(0x51);
+}
 extern void lcd_moveto(unsigned char row, unsigned char col)
 {
     sci_out(0xfe);              // Set the cursor position
