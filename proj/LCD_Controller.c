@@ -17,36 +17,7 @@
 
 #include <avr/io.h>
 #include <util/delay.h>
-
-void lcd_init(void);
-void lcd_moveto(unsigned char, unsigned char);
-void lcd_stringout(char *);
-void lcd_clear();
-
-void sci_init(void);
-void sci_out(char);
-void sci_outs(char *);
-
-char str1[] = "12345678901234567890";
-char str2[] = ">> USC EE459L <<";
-char str3[] = ">> at328-6.c <<<";
-char str4[] = "-- April 11, 2011 --";
-
-
-#define MYUBRR 51
-#ifdef MYUBRR 
-
-#else
-  #ifdef CLOCK_SPEED
-    #define FOSC CLOCK_SPEED
-  #else
-    #define FOSC 8000000UL		// Clock frequency
-  #endif
-  #define BAUD 9600UL              // Baud rate used by the LCD
-  #define MYUBRR FOSC/16/BAUD-1   // Value for UBRR0 register
-#endif
-//
-
+#include "LCD_Controller.h"
 
 /*
 int main(void) {

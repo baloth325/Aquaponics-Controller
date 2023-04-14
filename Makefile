@@ -1,7 +1,7 @@
 DEVICE     = atmega328p
 CLOCK      = 9830400
 PROGRAMMER = -c usbtiny -P usb
-OBJECTS    = ./proj/main.c  ./proj/LCD_Controller.c ./proj/pump_Controller.c ./proj/LED_Controller.c
+OBJECTS    = ./proj/main.c  ./proj/LCD_Controller.c ./proj/pump_Controller.c ./proj/LED_Controller.c ./proj/Button_Controller.c
 FUSES      = -U hfuse:w:0xd9:m -U lfuse:w:0xe0:m
 BIN_FOLDER = ./bin
 PROJ_FOLDER = ./proj
@@ -88,6 +88,11 @@ WATER_SWITCH: RS232_TEST
 	$(AVRDUDE) -U flash:w:$(BIN_FOLDER)/water_switch.hex:i
 disasm:	main.elf
 	avr-objdump -d $(BIN_FOLDER)/main.elf
-
+BUTTON_TEST: 
+	$(COMPILE) -o $(BIN_FOLDER)/button.elf ./proj/button_tester.c ./proj/Button_Controller.c ./proj/LCD_Controller.c
+	rm -f $(BIN_FOLDER)/button.hex
+	avr-objcopy -j .text -j .data -O ihex $(BIN_FOLDER)/button.elf $(BIN_FOLDER)/button.hex
+	avr-size --format=avr --mcu=$(DEVICE) $(BIN_FOLDER)/button.elf
+	$(AVRDUDE) -U flash:w:$(BIN_FOLDER)/button.hex:i
 cpp:
 	$(COMPILE) -E main.c

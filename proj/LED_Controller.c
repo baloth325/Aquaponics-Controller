@@ -1,4 +1,5 @@
 #include <avr/io.h>
+#include "LED_Controller.h"
 
 void LED_init()
 {
