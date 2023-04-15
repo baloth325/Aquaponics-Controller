@@ -21,6 +21,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 #include "LCD_Controller.h"
 #include "pump_Controller.h"
@@ -77,7 +78,7 @@ int main(void)
                     sci_out(0xDA);
                     print_Flag = true;
                 }
-                
+                break;
             case 1: //"Program Timing of the Pump"
                 if(!print_Flag){
                     lcd_clear();
@@ -91,7 +92,7 @@ int main(void)
                     sci_out(0xDA);
                     print_Flag = true;
                 }
-
+                break;
             case 2: //"Program Sensor Timing"
                 if(!print_Flag){
                     lcd_clear();
@@ -105,6 +106,7 @@ int main(void)
                     sci_out(0xDA);
                     print_Flag = true;
                 }
+                break;
             case 3: //"Turn ON/OFF Pump"
                 if(pump_is_on){
                     if (!print_Flag)
@@ -153,6 +155,7 @@ int main(void)
                         button_debounce = true;
                     }                    
                 }
+                break;
             case 4: //"Turn ON/OFF Chemical Filter"
                 if(chem_filter_is_on){
                     if (!print_Flag)
@@ -202,6 +205,7 @@ int main(void)
                     }                    
                     */
                 }
+                break;
             case 5: //"Turn ON/OFF BioFilter"
                 if(bio_filter_is_on){
                     if (!print_Flag){
@@ -250,6 +254,7 @@ int main(void)
                     }                    
                     */
                 }
+                break;
             case 6: //"Turn OFF everything"
                 if (!print_Flag)
                     {
@@ -278,6 +283,7 @@ int main(void)
                         sci_out(0xDA);
                         print_Flag = true;
                     }
+                    break;
             case 8: // "Welcome to Aquaponics Controller"
                 lcd_moveto(1,6);
                 lcd_stringout("Welcome");
@@ -289,10 +295,10 @@ int main(void)
                     _delay_ms(250);
                 }
                 lcd_clear();
-                for(i = 0; i<4; i++)
-                {
-                    _delay_ms(250);
-                }
+                // for(i = 0; i<4; i++)
+                // {
+                //     _delay_ms(250);
+                // }
                 state = 0;
 
             /*case 9: //Print all sensor readings:
@@ -321,13 +327,14 @@ int main(void)
                 {
                     if(state == 0)
                     {
-                        state = 7
+                        state = 7;
                     }
                     else
                     {
                         state = state - 1;
                     }
                     button_debounce = true;
+                    print_Flag = false;
                 }
                 else if (button_pressed('d'))
                 {
@@ -341,20 +348,23 @@ int main(void)
                     }
 
                     button_debounce = true;
+                    print_Flag = false;
                 }
             }
             else
             {
                 if(!button_pressed('a'))
                 {
-                    lcd_clear();
-                    lcd_stringout("Button is free");
-                    char i;
-                     for(i = 0; i<4; i++)
-                        {
-                            _delay_ms(250);
-                        }
-                    //button_debounce = false;
+                    // lcd_clear();
+                    // char buffer[20];
+                    // sprintf(buffer, " %d", state);
+                    // lcd_stringout(buffer);
+                    // char i;
+                    //  for(i = 0; i<4; i++)
+                    //     {
+                    //         _delay_ms(250);
+                    //     }
+                    button_debounce = false;
                 }
             }
         }
