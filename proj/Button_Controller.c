@@ -37,7 +37,10 @@ bool button_pressed(unsigned char button)
     {
         return !(PIND & 0x20);
     }
-    
+    if(button == 'a')
+    {
+        return (!(PIND & 0xE0) && !(PINB & 0x01));
+    }
 
     return 0;
 }

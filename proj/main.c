@@ -61,27 +61,11 @@ int main(void)
     bool print_Flag = false;
     bool button_debounce = false;
     setup();
-    unsigned char state = 1;
+    unsigned char state = 8;
     while (1) {
         switch(state){
-            case 0:  // Enter sleep state
-
-            case 1: // "Welcome to Aquaponics Controller"
-                lcd_moveto(1,6);
-                lcd_stringout("Welcome");
-                lcd_moveto(2,4);
-                lcd_stringout("To Aquaponics");
-                char i;
-                for(i = 0; i<8; i++)
-                {
-                    _delay_ms(250);
-                }
-                lcd_clear();
-                state = 2;
-
-            case 2: // "Current Sensor Reading"
-                if(!print_Flag)
-                {
+            case 0: // "Current Sensor Reading"
+                if(!print_Flag){
                     lcd_clear();
                     lcd_moveto(0,6);
                     lcd_stringout("^");
@@ -94,45 +78,13 @@ int main(void)
                     print_Flag = true;
                 }
                 
-                if (button_pressed('u'))
-                {
-                    //refresh timeout variable
-                    state = 8;
-                    print_Flag = false;
-                }
-                if (button_pressed('d'))
-                {
-                    //refresh timeout variable
-                    state = 3;
-                    print_Flag = false;
-
-                }
-                if (button_pressed('g'))
-                {
-                    //refresh timeout variable
-                    state = 10;
-                    print_Flag = false;
-
-                }
-                if (button_pressed('r'))
-                {
-                    //refresh timeout variable
-                    //print_Flag = False
-                }
-                /*if(timeout)
-                {
-                    state = 0
-                    print_Flag = False
-                }
-                */
-            case 3: //"Program Timing of the Pump"
-                if(!print_Flag)
-                {
+            case 1: //"Program Timing of the Pump"
+                if(!print_Flag){
                     lcd_clear();
                     lcd_moveto(0,6);
                     lcd_stringout("^");
                     lcd_moveto(1,0);
-                    lcd_stringout("Program The Timing of the Pump");
+                    lcd_stringout("Program Pump Timing");
                     lcd_moveto(2,4);
                     lcd_stringout("(Press Green)");
                     lcd_moveto(3,6);
@@ -140,42 +92,8 @@ int main(void)
                     print_Flag = true;
                 }
 
-                if (button_pressed('u'))
-                {
-                    //refresh timeout variable
-                    state = 2;
-                    print_Flag = false;
-                }
-                if (button_pressed('d'))
-                {
-                   // refresh timeout variable
-                    state = 4;
-                    print_Flag = false;
-                }
-                if (button_pressed('g'))
-                {
-                   // refresh timeout variable
-                    state = 11;
-                    print_Flag = false;
-                }
-                if (button_pressed('r'))
-                {
-                    //refresh timeout variable
-                    print_Flag = false;
-                }
-                /*
-                if(timeout)
-                {
-                    state = 0
-                    print_Flag = False
-                }
-                
-                
-                */
-
-            case 4: //"Program Sensor Timing"
-                if(!print_Flag)
-                {
+            case 2: //"Program Sensor Timing"
+                if(!print_Flag){
                     lcd_clear();
                     lcd_moveto(0,6);
                     lcd_stringout("^");
@@ -187,38 +105,8 @@ int main(void)
                     sci_out(0xDA);
                     print_Flag = true;
                 }
-                
-                if (button_pressed('u'))
-                {
-                    //refresh timeout variable
-                    state = 3;
-                    print_Flag = false;
-                }
-                if (button_pressed('d'))
-                {
-                    //refresh timeout variable
-                    state = 5;
-                    print_Flag = false;
-                }
-                if (button_pressed('g'))
-                {
-                    //refresh timeout variable
-                    state = 11;
-                    print_Flag = false;
-                }
-                if (button_pressed('r'))
-                {
-                    //refresh timeout variable
-                }
-                /*
-                if(timeout)
-                {
-                    state = 0
-                }
-                */
-            case 5: //"Turn ON/OFF Pump"
-                if(pump_is_on)
-                {
+            case 3: //"Turn ON/OFF Pump"
+                if(pump_is_on){
                     if (!print_Flag)
                     {
                         lcd_clear();
@@ -233,17 +121,16 @@ int main(void)
                         print_Flag = true;
                     }
                     
-                    if(button_pressed('g'))
+                    if(button_pressed('g') && !button_debounce)
                     {
                         turn_off_pump();
                         //refresh timeout variable
                         pump_is_on = false;
                         print_Flag = false;
+                        button_debounce = true;
                     }                    
-                    
                 }
-                else
-                {
+                else{
                     if (!print_Flag)
                     {
                         lcd_clear();
@@ -257,31 +144,17 @@ int main(void)
                         sci_out(0xDA);
                         print_Flag = true;
                     }
-                    
-                    if(button_pressed('g'))
+                    if(button_pressed('g') && !button_debounce)
                     {
                         turn_on_pump();
                         //refresh timeout variable
                         pump_is_on = true;
                         print_Flag = false;
+                        button_debounce = true;
                     }                    
                 }
-                 if (button_pressed('u'))
-                {
-                    //refresh timeout variable
-                    state = 4;
-                    print_Flag = false;
-                }
-                if (button_pressed('d'))
-                {
-                    //refresh timeout variable
-                    state = 6;
-                    print_Flag = false;
-                }
-
-            case 6: //"Turn ON/OFF Chemical Filter"
-                if(chem_filter_is_on)
-                {
+            case 4: //"Turn ON/OFF Chemical Filter"
+                if(chem_filter_is_on){
                     if (!print_Flag)
                     {
                         lcd_clear();
@@ -305,8 +178,7 @@ int main(void)
                     }                    
                     */
                 }
-                else
-                {
+                else{
                     if (!print_Flag)
                     {
                         lcd_clear();
@@ -330,25 +202,9 @@ int main(void)
                     }                    
                     */
                 }
-                if (button_pressed('u'))
-                {
-                    //refresh timeout variable
-                    state = 5;
-                    print_Flag = false;
-                }
-                if (button_pressed('d'))
-                {
-                    //refresh timeout variable
-                    state = 7;
-                    print_Flag = false;
-                }
-
-
-            case 7: //"Turn ON/OFF BioFilter"
-                if(bio_filter_is_on)
-                {
-                    if (!print_Flag)
-                    {
+            case 5: //"Turn ON/OFF BioFilter"
+                if(bio_filter_is_on){
+                    if (!print_Flag){
                         lcd_clear();
                         lcd_moveto(0,6);
                         lcd_stringout("^");
@@ -370,8 +226,7 @@ int main(void)
                     }                    
                     */
                 }
-                else
-                {
+                else{
                     if (!print_Flag)
                     {
                         lcd_clear();
@@ -390,26 +245,12 @@ int main(void)
                     {
                         turn_on_pump();
                         refresh timeout variable
-                        pump_is_on = true;
+                        pum7p_is_on = true;
                         print_Flag = false;
                     }                    
                     */
                 }
-                 if (button_pressed('u'))
-                {
-                    //refresh timeout variable
-                    state = 6;
-                    print_Flag = false;
-                }
-                if (button_pressed('d'))
-                {
-                    //refresh timeout variable
-                    state = 8;
-                    print_Flag = false;
-                }
-
-
-            case 8: //"Turn OFF everything"
+            case 6: //"Turn OFF everything"
                 if (!print_Flag)
                     {
                         lcd_clear();
@@ -423,76 +264,38 @@ int main(void)
                         sci_out(0xDA);
                         print_Flag = true;
                     }
-                if (button_pressed('u'))
-                {
-                    //refresh timeout variable
-                    state = 7;
-                    print_Flag = false;
-                }
-                if (button_pressed('d'))
-                {
-                    //refresh timeout variable
-                    state = 2;
-                    print_Flag = false;
-
-                }
-                if (button_pressed('g'))
-                {
-                    //refresh timeout variable
-                    state = 10;
-                    print_Flag = false;
-
-                }
-                if (button_pressed('r'))
-                {
-                    //refresh timeout variable
-                    //print_Flag = False
-                }
-
-
-            case 9: // "Go into sleep mode"
+            case 7: // "Go into sleep mode"
                 if (!print_Flag)
                     {
                         lcd_clear();
                         lcd_moveto(0,6);
                         lcd_stringout("^");
                         lcd_moveto(1,0);
-                        lcd_stringout("Go into Sleep Mode");
+                        lcd_stringout("Sleep Mode");
                         lcd_moveto(2,4);
                         lcd_stringout("(Press Green)");
                         lcd_moveto(3,6);
                         sci_out(0xDA);
                         print_Flag = true;
                     }
-                    /*
-                if (up_button pressed)
+            case 8: // "Welcome to Aquaponics Controller"
+                lcd_moveto(1,6);
+                lcd_stringout("Welcome");
+                lcd_moveto(2,4);
+                lcd_stringout("To Aquaponics");
+                char i;
+                for(i = 0; i<4; i++)
                 {
-                    refresh timeout variable
-                    state = 8
+                    _delay_ms(250);
                 }
-                if (down_button pressed)
+                lcd_clear();
+                for(i = 0; i<4; i++)
                 {
-                    refresh timeout variable
-                    state = 3
+                    _delay_ms(250);
                 }
-                if (select button pressed)
-                {
-                    Enter Sleep mode
-                    refresh timeout variable
-                    state = 0
-                }
-                if (back button pressed)
-                {
-                    refresh timeout variable
-                }
-                if(timeout)
-                {
-                    state = 0
-                }
-                */
+                state = 0;
 
-
-            case 10: //Print all sensor readings:
+            /*case 9: //Print all sensor readings:
             if (!print_Flag)
                     {
                         lcd_clear();
@@ -505,7 +308,55 @@ int main(void)
                         lcd_moveto(3,0);
                         lcd_stringout("Suggestion:");
                         print_Flag = true;
+                    } */
+        }
+
+
+
+        if(state < 8)
+        {
+            if(!button_debounce)
+            {
+                if(button_pressed('u'))
+                {
+                    if(state == 0)
+                    {
+                        state = 7
                     }
+                    else
+                    {
+                        state = state - 1;
+                    }
+                    button_debounce = true;
+                }
+                else if (button_pressed('d'))
+                {
+                    if (state == 7)
+                    {
+                        state = 0;
+                    }
+                    else
+                    {
+                        state = state + 1;
+                    }
+
+                    button_debounce = true;
+                }
+            }
+            else
+            {
+                if(!button_pressed('a'))
+                {
+                    lcd_clear();
+                    lcd_stringout("Button is free");
+                    char i;
+                     for(i = 0; i<4; i++)
+                        {
+                            _delay_ms(250);
+                        }
+                    //button_debounce = false;
+                }
+            }
         }
     }
 
