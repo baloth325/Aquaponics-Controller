@@ -94,5 +94,13 @@ BUTTON_TEST:
 	avr-objcopy -j .text -j .data -O ihex $(BIN_FOLDER)/button.elf $(BIN_FOLDER)/button.hex
 	avr-size --format=avr --mcu=$(DEVICE) $(BIN_FOLDER)/button.elf
 	$(AVRDUDE) -U flash:w:$(BIN_FOLDER)/button.hex:i
+TDS_TEST: 
+	$(COMPILE) -o $(BIN_FOLDER)/tds.elf ./proj/TDC_tester.c ./proj/TDS_Controller.c ./proj/LCD_Controller.c
+	rm -f $(BIN_FOLDER)/tds.hex
+	avr-objcopy -j .text -j .data -O ihex $(BIN_FOLDER)/tds.elf $(BIN_FOLDER)/tds.hex
+	avr-size --format=avr --mcu=$(DEVICE) $(BIN_FOLDER)/tds.elf
+	$(AVRDUDE) -U flash:w:$(BIN_FOLDER)/tds.hex:i
+
+
 cpp:
 	$(COMPILE) -E main.c

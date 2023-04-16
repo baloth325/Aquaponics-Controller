@@ -1,3 +1,9 @@
+
+#include <avr/io.h>
+#include "TDS_Controller.h"
+
+
+
 void TDS_init()
 {
     //Set the ADC clock prescalar
@@ -8,11 +14,19 @@ void TDS_init()
     //set the clock Prescalar to 64
     ADCSRA |= (1<<ADPS2);
     ADCSRA |= (1<<ADPS1);
-    //
+    //Configure Refs to 0b00
+    ADMUX &= ~(1<<REFS1);
+    ADMUX &= ~(1<<REFS0);
+    //Set ADLAR to zero for 10 bit resolution
+    ADMUX &= ~(1<<ADLAR);
+
+
+
 }
-unsigned int TDS_read()
+ int TDS_read()
 {
     //set mux select to read ADC1
+    ADMUX &= 0xF0;
     ADMUX |= (1<<MUX0);
     //ADC Enable
     ADCSRA |= (1<<ADEN);
@@ -22,10 +36,7 @@ unsigned int TDS_read()
     while(!(ADCSRA & (1<<ADSC)))
     {}
 
-    unsigned int data;
-
-    data = ((ADCH & 0x03) << 8) | ADCL;
+    int data;
+    data = ADC;
     return data;
-
-
 }
