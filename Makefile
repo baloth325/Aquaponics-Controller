@@ -1,5 +1,5 @@
 DEVICE     = atmega328p
-CLOCK      = 9830400
+CLOCK      = 7372800
 PROGRAMMER = -c usbtiny -P usb
 OBJECTS    = ./proj/main.c  ./proj/LCD_Controller.c ./proj/pump_Controller.c ./proj/LED_Controller.c ./proj/Button_Controller.c
 FUSES      = -U hfuse:w:0xd9:m -U lfuse:w:0xe0:m
@@ -100,7 +100,12 @@ TDS_TEST:
 	avr-objcopy -j .text -j .data -O ihex $(BIN_FOLDER)/tds.elf $(BIN_FOLDER)/tds.hex
 	avr-size --format=avr --mcu=$(DEVICE) $(BIN_FOLDER)/tds.elf
 	$(AVRDUDE) -U flash:w:$(BIN_FOLDER)/tds.hex:i
-
+PH_TEST: 
+	$(COMPILE) -o $(BIN_FOLDER)/PH.elf ./proj/PH_Tester.c ./proj/PH_Controller.c ./proj/LCD_Controller.c
+	rm -f $(BIN_FOLDER)/PH.hex
+	avr-objcopy -j .text -j .data -O ihex $(BIN_FOLDER)/PH.elf $(BIN_FOLDER)/PH.hex
+	avr-size --format=avr --mcu=$(DEVICE) $(BIN_FOLDER)/PH.elf
+	$(AVRDUDE) -U flash:w:$(BIN_FOLDER)/PH.hex:i
 
 cpp:
 	$(COMPILE) -E main.c
