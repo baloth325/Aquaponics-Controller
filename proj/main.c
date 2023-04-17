@@ -38,9 +38,15 @@ volatile int state = 8;
 
 
 #ifdef CLOCK_PRESCALAR
-#define CLOCK_SPEED(CLOCK_PRESCALAR) (int)8000000/CLOCK_PRESCALAR
+    #ifndef F_CPU
+    #define F_CPU 7372800
+    #endif
+    #define CLOCK_SPEED(CLOCK_PRESCALAR) (int)F_CPU/CLOCK_PRESCALAR4
 #else
-#define CLOCK_SPEED 8000000
+    #ifndef F_CPU
+    #define F_CPU 7372800
+    #endif
+    #define CLOCK_SPEED F_CPU
 #endif
 
 ISR(TIMER1_COMPA_vect) {

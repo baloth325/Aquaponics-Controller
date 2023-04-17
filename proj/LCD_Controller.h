@@ -12,7 +12,7 @@ void sci_outs(char *);
 
 
 
-    #define MYUBRR 51
+   #define MYUBRR 47
     #ifdef MYUBRR 
 
     #else
