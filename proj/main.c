@@ -22,13 +22,16 @@
 #include <util/delay.h>
 #include <stdbool.h>
 #include <stdio.h>
+#include <avr/interrupt.h>
+
 
 #include "LCD_Controller.h"
 #include "pump_Controller.h"
 #include "LED_Controller.h"
 #include "Button_Controller.h"
+#include "Waterswitch_Controller.h"
 
-
+volatile uint32_t timer_count = 0;
 
 //#define CLOCK_PRESCALAR 0x00    //must be in hex 2,4,8,16,32,64,128,or 256 following page60 in Atmel Documentation: Comment line if no prescalar desired
 
@@ -45,6 +48,17 @@
     #define CLOCK_SPEED F_CPU
 #endif
 
+ISR(TIMER1_COMPA_vect) {
+    // Increment the timer count
+    timer_count++;
+    if(timer_count == 2)
+    {
+        timer_count = 0;
+        turn_on_LED();
+        _delay_ms(250);
+        turn_off_LED();
+    }
+}
 
 void setup()
 {
@@ -58,6 +72,9 @@ void setup()
     lcd_init();
     LED_init();
     buttons_init();
+    TCCR1B |= (1 << WGM12) | (1 << CS12);
+    OCR1A = 31249; // Compare value for 1 hour with 8 MHz clock and 256 prescaler
+    TIMSK1 |= (1 << OCIE1A); // Enable timer compare interrupt
     return;
 }
 int main(void)
@@ -69,6 +86,9 @@ int main(void)
     bool button_debounce = false;
     setup();
     unsigned char state = 8;
+
+    
+
     while (1) {
         switch(state){
             case 0: // "Current Sensor Reading"
@@ -289,6 +309,13 @@ int main(void)
                         sci_out(0xDA);
                         print_Flag = true;
                     }
+
+                    if(button_pressed('g') && !button_debounce)
+                    {
+                        state = 9;
+                        print_Flag = false;
+                        button_debounce = true;
+                    }
                     break;
             case 8: // "Welcome to Aquaponics Controller"
                 lcd_moveto(1,6);
@@ -306,7 +333,9 @@ int main(void)
                 //     _delay_ms(250);
                 // }
                 state = 0;
-
+            case 9:
+                lcd_clear();
+                sei();
             /*case 9: //Print all sensor readings:
             if (!print_Flag)
                     {
