@@ -10,18 +10,16 @@ void sci_init(void);
 void sci_out(char);
 void sci_outs(char *);
 
+    #define SPI_FLAG 1
 
-
-   #define MYUBRR 47
-    #ifdef MYUBRR 
-
-    #else
-    #ifdef CLOCK_SPEED
-        #define FOSC CLOCK_SPEED
-    #else
-        #define FOSC 8000000UL		// Clock frequency
-    #endif
-    #define BAUD 9600UL              // Baud rate used by the LCD
-    #define MYUBRR FOSC/16/BAUD-1   // Value for UBRR0 register
+    #define MYUBRR 47
+    #ifndef MYUBRR 
+        #ifdef CLOCK_SPEED
+            #define FOSC CLOCK_SPEED
+        #else
+            #define FOSC 8000000UL		// Clock frequency
+        #endif
+        #define BAUD 9600UL              // Baud rate used by the LCD
+        #define MYUBRR FOSC/16/BAUD-1   // Value for UBRR0 register
     #endif
 #endif

@@ -11,7 +11,8 @@ int main(void)
 {
 buttons_init();
 lcd_init();
-
+lcd_stringout("I hate LCD");
+/*
 while(1)
 {
     lcd_moveto(0,1);
@@ -40,6 +41,6 @@ while(1)
         lcd_clear();
         lcd_stringout("No Button Pressed");
     }
-}
+}*/
 return 0;
 }
