@@ -18,42 +18,21 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include "LCD_Controller.h"
-
-/*
-int main(void) {
-
-    
-    
-    lcd_init();                 // Initialize the LCD
-
-    lcd_moveto(0, 0);
-    lcd_stringout("I hate this LCD");        // Print string on line 1
-    lcd_moveto(1, 2);
-    lcd_stringout(str2);        // Print string on line 2
-    lcd_moveto(2, 2);
-    lcd_stringout(str3);        // Print string on line 3
-    lcd_moveto(3, 3);
-    lcd_stringout(str4);        // Print string on line 4
-
-    while (1) {                 // Loop forever
-    }
-
-    return 0;   // never reached 
-}*/
-
 /*
   lcd_init - Initialize the LCD
 */
 extern void lcd_init()
 {
+
     sci_init();                 // Initialize the SCI port
+
     _delay_ms(250);             // Wait 500msec for the LCD to start up
     _delay_ms(250);
-    sci_out(0xFE);              // Clear the screen
+   /* sci_out(0xFE);              // Clear the screen
     sci_out(0x51);
     sci_out(0xFE);              // Change brightness
     sci_out(0x53);
-    sci_out(0b0111);
+    sci_out(0b0111); */
 }
 
 /*
@@ -108,16 +87,23 @@ extern void lcd_stringout(char *str)
 */
 void sci_init(void) {
     //OSCCAL |= 0x73;
+    DDRD |= (1<<DDD2); PORTD |= (1<<DDD2); // PD2 is slave select for LCD
     UBRR0 = 0;
-    UCSR0C |= (1<<UMSEL00); //Sets to synchronous master mode
-    DDRD |= (1<<DDD4);
+    DDRD |= (1<<DDD4); // DDR XCK = 1
+    UCSR0C |= (1<<UMSEL00); UCSR0C |= (1<<UMSEL01);  //Sets to SPI master mode
+    UCSR0C |= (1<<UCPOL0); UCSR0C |= (1<<UCPHA0); //SPI type 3
+    //UCSR0C |= (1<<UDORD0 ); // little endian
+    //UCSR0C |= (1 << UCSZ00);  // Set for asynchronous operation, no parity, 
+    //UCSR0C |= (1 << UCSZ01);                  // one stop bit, 8 data bits
     UCSR0B |= (1 << TXEN0);  // Turn on transmitter
-    UCSR0C |= (3 << UCSZ00);  // Set for asynchronous operation, no parity, 
-                             // one stop bit, 8 data bits
-    UBRR0H = (unsigned char)(MYUBRR>>8);
-    UBRR0L = (unsigned char)MYUBRR;
     UBRR0 = MYUBRR;
+
+    ///toggle SS once to synchronize the LCD
+
+    PORTD &= ~(1<<DDD2);
+    PORTD |= (1<<DDD2);
     //UBRR0 = MYUBRR;          // Set baud rate
+    
 }
 
 /*
@@ -125,8 +111,11 @@ void sci_init(void) {
 */
 void sci_out(char ch)
 {
-    while ( (UCSR0A & (1<<UDRE0)) == 0);
+    PORTD &= ~(1<<DDD2);
     UDR0 = ch;
+    while ( !(UCSR0A & (1<<UDRE0))) {};
+    PORTD |= (1<<DDD2);
+
 }
 
 /*
@@ -135,7 +124,11 @@ void sci_out(char ch)
 */
 void sci_outs(char *s)
 {
+
     char ch;
     while ((ch = *s++) != '\0')
         sci_out(ch);
+    PORTD |= (1<<DDD2);
+
 }
+
