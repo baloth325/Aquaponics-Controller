@@ -11,7 +11,7 @@ int main(void)
 {
 buttons_init();
 lcd_init();
-lcd_stringout("I hate LCD");
+lcd_stringout("I hate LCDs");
 /*
 while(1)
 {

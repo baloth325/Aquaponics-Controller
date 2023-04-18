@@ -10,9 +10,7 @@ void sci_init(void);
 void sci_out(char);
 void sci_outs(char *);
 
-    #define SPI_FLAG 1
-
-    #define MYUBRR 47
+    #define MYUBRR 51
     #ifndef MYUBRR 
         #ifdef CLOCK_SPEED
             #define FOSC CLOCK_SPEED
