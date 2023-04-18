@@ -32,6 +32,7 @@
 #include "Waterswitch_Controller.h"
 
 volatile uint32_t timer_count = 0;
+volatile int state = 8;
 
 //#define CLOCK_PRESCALAR 0x00    //must be in hex 2,4,8,16,32,64,128,or 256 following page60 in Atmel Documentation: Comment line if no prescalar desired
 
@@ -45,13 +46,16 @@ volatile uint32_t timer_count = 0;
 ISR(TIMER1_COMPA_vect) {
     // Increment the timer count
     timer_count++;
-    if(timer_count == 2)
+    if(state == 9)
     {
-        timer_count = 0;
-        turn_on_LED();
-        _delay_ms(250);
-        turn_off_LED();
-    }
+        if(timer_count == 2)
+        {
+            turn_on_LED();
+            _delay_ms(100);
+            turn_off_LED();
+            timer_count = 0;
+        }
+    } 
 }
 
 void setup()
@@ -79,7 +83,6 @@ int main(void)
     bool print_Flag = false;
     bool button_debounce = false;
     setup();
-    unsigned char state = 8;
 
     
 
@@ -317,7 +320,7 @@ int main(void)
                 lcd_moveto(2,4);
                 lcd_stringout("To Aquaponics");
                 char i;
-                for(i = 0; i<4; i++)
+                for(i = 0; i<2; i++)
                 {
                     _delay_ms(250);
                 }
