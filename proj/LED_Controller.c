@@ -4,6 +4,7 @@
 void LED_init()
 {
     DDRC |= 1 << DDC0;
+    
 }
 void turn_on_LED()
 {

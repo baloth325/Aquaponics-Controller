@@ -38,15 +38,9 @@ volatile int state = 8;
 
 
 #ifdef CLOCK_PRESCALAR
-    #ifndef F_CPU
-    #define F_CPU 7372800
-    #endif
-    #define CLOCK_SPEED(CLOCK_PRESCALAR) (int)F_CPU/CLOCK_PRESCALAR4
+#define CLOCK_SPEED(CLOCK_PRESCALAR) (int)8000000/CLOCK_PRESCALAR
 #else
-    #ifndef F_CPU
-    #define F_CPU 7372800
-    #endif
-    #define CLOCK_SPEED F_CPU
+#define CLOCK_SPEED 8000000
 #endif
 
 ISR(TIMER1_COMPA_vect) {
@@ -77,7 +71,7 @@ void setup()
     LED_init();
     buttons_init();
     TCCR1B |= (1 << WGM12) | (1 << CS12);
-    OCR1A = 31249; // Compare value for 1 hour with 8 MHz clock and 256 prescaler
+    OCR1A = 31249; // Compare value for 1 hour with 8 MHz clock and 1024 prescaler
     TIMSK1 |= (1 << OCIE1A); // Enable timer compare interrupt
     return;
 }
