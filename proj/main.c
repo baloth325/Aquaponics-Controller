@@ -33,6 +33,8 @@
 
 volatile uint32_t timer_count = 0;
 volatile unsigned char state = 0;
+volatile bool print_Flag = false;
+volatile bool button_debounce = false;
 
 //#define CLOCK_PRESCALAR 0x00    //must be in hex 2,4,8,16,32,64,128,or 256 following page60 in Atmel Documentation: Comment line if no prescalar desired
 
@@ -71,7 +73,14 @@ ISR(TIMER1_COMPA_vect) {
             turn_off_red_LED();
             turn_off_heater();
             timer_count = 0;
-        }   
+        } 
+        if(button_pressed('a') && !button_debounce)  
+        {
+            print_Flag = false;
+            button_debounce = true;
+            state = 8;
+            reti();
+        }
     }   
 }
 
@@ -88,7 +97,7 @@ void setup()
     LED_init();
     buttons_init();
     TCCR1B |= (1 << WGM12) | (1 << CS12);
-    OCR1A = 31249; // Compare value for 1 hour with 8 MHz clock and 1024 prescalers
+    OCR1A = 31249; // Compare value for 1 hour with 8 MHz clock and 256 prescalers
     TIMSK1 |= (1 << OCIE1A); // Enable timer compare interrupt
     return;
 }
@@ -97,8 +106,8 @@ int main(void)
     bool pump_is_on = false;
     bool chem_filter_is_on = false;
     bool bio_filter_is_on = false;
-    bool print_Flag = false;
-    bool button_debounce = false;
+    print_Flag = false;
+    button_debounce = false;
     setup();
     state = 8;
  
@@ -108,42 +117,44 @@ int main(void)
             case 0: // "Current Sensor Reading"
                 if(!print_Flag){
                     lcd_clear();
-                    lcd_moveto(0,6);
+                    lcd_moveto(0,10);
                     lcd_stringout("^");
-                    lcd_moveto(1,0);
+                    lcd_moveto(1,2);
                     lcd_stringout("Sensor Readings");
-                    lcd_moveto(2,4);
-                    lcd_stringout("(Press Green)");
-                    lcd_moveto(3,6);
-                    sci_out(0xDA);
+                    // lcd_moveto(2,4);
+                    // lcd_stringout("(Press Green)");
+                    lcd_moveto(3,10);
+                    lcd_stringout("v");
                     print_Flag = true;
                 }
                 break;
             case 1: //"Program Timing of the Pump"
                 if(!print_Flag){
                     lcd_clear();
-                    lcd_moveto(0,6);
+                    lcd_moveto(0,10);
                     lcd_stringout("^");
                     lcd_moveto(1,0);
                     lcd_stringout("Program Pump Timing");
-                    lcd_moveto(2,4);
-                    lcd_stringout("(Press Green)");
-                    lcd_moveto(3,6);
-                    sci_out(0xDA);
+                    // lcd_moveto(2,4);
+                    // lcd_stringout("(Press Green)");
+                    lcd_moveto(3,10);
+                    lcd_stringout("v");
                     print_Flag = true;
                 }
                 break;
             case 2: //"Program Sensor Timing"
                 if(!print_Flag){
                     lcd_clear();
-                    lcd_moveto(0,6);
+                    lcd_moveto(0,10);
                     lcd_stringout("^");
-                    lcd_moveto(1,0);
-                    lcd_stringout("Program Sensor Timing");
-                    lcd_moveto(2,4);
-                    lcd_stringout("(Press Green)");
-                    lcd_moveto(3,6);
-                    sci_out(0xDA);
+                    lcd_moveto(1,3);
+                    lcd_stringout("Program Sensor");
+                    lcd_moveto(2,7);
+                    lcd_stringout("Timing");
+                    // lcd_moveto(2,4);
+                    // lcd_stringout("(Press Green)");
+                    lcd_moveto(3,10);
+                    lcd_stringout("v");
                     print_Flag = true;
                 }
                 break;
@@ -152,14 +163,14 @@ int main(void)
                     if (!print_Flag)
                     {
                         lcd_clear();
-                        lcd_moveto(0,6);
+                        lcd_moveto(0,10);
                         lcd_stringout("^");
-                        lcd_moveto(1,0);
+                        lcd_moveto(1,2);
                         lcd_stringout("Turn OFF the Pump");
-                        lcd_moveto(2,4);
-                        lcd_stringout("(Press Green)");
-                        lcd_moveto(3,6);
-                        sci_out(0xDA);
+                        // lcd_moveto(2,4);
+                        // lcd_stringout("(Press Green)");
+                        lcd_moveto(3,10);
+                        lcd_stringout("v");
                         print_Flag = true;
                     }
                     
@@ -176,14 +187,14 @@ int main(void)
                     if (!print_Flag)
                     {
                         lcd_clear();
-                        lcd_moveto(0,6);
+                        lcd_moveto(0,10);
                         lcd_stringout("^");
-                        lcd_moveto(1,0);
+                        lcd_moveto(1,2);
                         lcd_stringout("Turn ON the Pump");
-                        lcd_moveto(2,4);
-                        lcd_stringout("(Press Green)");
-                        lcd_moveto(3,6);
-                        sci_out(0xDA);
+                        // lcd_moveto(2,4);
+                        // lcd_stringout("(Press Green)");
+                        lcd_moveto(3,10);
+                        lcd_stringout("v");
                         print_Flag = true;
                     }
                     if(button_pressed('g') && !button_debounce)
@@ -201,14 +212,16 @@ int main(void)
                     if (!print_Flag)
                     {
                         lcd_clear();
-                        lcd_moveto(0,6);
+                        lcd_moveto(0,10);
                         lcd_stringout("^");
-                        lcd_moveto(1,0);
-                        lcd_stringout("Turn OFF the Chem Filter");
-                        lcd_moveto(2,4);
-                        lcd_stringout("(Press Green)");
-                        lcd_moveto(3,6);
-                        sci_out(0xDA);
+                        lcd_moveto(1,6);
+                        lcd_stringout("Turn OFF");
+                        lcd_moveto(2,2);
+                        lcd_stringout("Chemical Filter");
+                        // lcd_moveto(2,4);
+                        // lcd_stringout("(Press Green)");
+                        lcd_moveto(3,10);
+                        lcd_stringout("v");
                         print_Flag = true;
                     }
                     /*
@@ -225,14 +238,16 @@ int main(void)
                     if (!print_Flag)
                     {
                         lcd_clear();
-                        lcd_moveto(0,6);
+                        lcd_moveto(0,10);
                         lcd_stringout("^");
-                        lcd_moveto(1,0);
-                        lcd_stringout("Turn ON the Chem Filter");
-                        lcd_moveto(2,4);
-                        lcd_stringout("(Press Green)");
-                        lcd_moveto(3,6);
-                        sci_out(0xDA);
+                        lcd_moveto(1,6);
+                        lcd_stringout("Turn ON");
+                        lcd_moveto(2,2);
+                        lcd_stringout("Chemical Filter");
+                        // lcd_moveto(2,4);
+                        // lcd_stringout("(Press Green)");
+                        lcd_moveto(3,10);
+                        lcd_stringout("v");
                         print_Flag = true;
                     }
                     /*
@@ -250,14 +265,16 @@ int main(void)
                 if(bio_filter_is_on){
                     if (!print_Flag){
                         lcd_clear();
-                        lcd_moveto(0,6);
+                        lcd_moveto(0,10);
                         lcd_stringout("^");
-                        lcd_moveto(1,0);
-                        lcd_stringout("Turn OFF the Bio Filter");
-                        lcd_moveto(2,4);
-                        lcd_stringout("(Press Green)");
-                        lcd_moveto(3,6);
-                        sci_out(0xDA);
+                        lcd_moveto(1,6);
+                        lcd_stringout("Turn OFF");
+                        lcd_moveto(2,5);
+                        lcd_stringout("Bio Filter");
+                        // lcd_moveto(2,4);
+                        // lcd_stringout("(Press Green)");
+                        lcd_moveto(3,10);
+                        lcd_stringout("v");
                         print_Flag = true;
                     }
                     /*
@@ -274,14 +291,16 @@ int main(void)
                     if (!print_Flag)
                     {
                         lcd_clear();
-                        lcd_moveto(0,6);
+                        lcd_moveto(0,10);
                         lcd_stringout("^");
-                        lcd_moveto(1,0);
-                        lcd_stringout("Turn ON the Bio Filter");
-                        lcd_moveto(2,4);
-                        lcd_stringout("(Press Green)");
-                        lcd_moveto(3,6);
-                        sci_out(0xDA);
+                        lcd_moveto(1,6);
+                        lcd_stringout("Turn ON");
+                        lcd_moveto(2,5);
+                        lcd_stringout("Bio Filter");
+                        // lcd_moveto(2,4);
+                        // lcd_stringout("(Press Green)");
+                        lcd_moveto(3,10);
+                        lcd_stringout("v");
                         print_Flag = true;
                     }
                     /*
@@ -299,14 +318,14 @@ int main(void)
                 if (!print_Flag)
                     {
                         lcd_clear();
-                        lcd_moveto(0,6);
+                        lcd_moveto(0,10);
                         lcd_stringout("^");
                         lcd_moveto(1,0);
                         lcd_stringout("Turn OFF everything");
-                        lcd_moveto(2,4);
-                        lcd_stringout("(Press Green)");
-                        lcd_moveto(3,6);
-                        sci_out(0xDA);
+                        // lcd_moveto(2,4);
+                        // lcd_stringout("(Press Green)");
+                        lcd_moveto(3,10);
+                        lcd_stringout("v");
                         print_Flag = true;
                     }
                     break;
@@ -314,14 +333,14 @@ int main(void)
                 if (!print_Flag)
                     {
                         lcd_clear();
-                        lcd_moveto(0,6);
+                        lcd_moveto(0,10);
                         lcd_stringout("^");
-                        lcd_moveto(1,0);
+                        lcd_moveto(1,5);
                         lcd_stringout("Sleep Mode");
-                        lcd_moveto(2,4);
-                        lcd_stringout("(Press Green)");
-                        lcd_moveto(3,6);
-                        sci_out(0xDA);
+                        // lcd_moveto(2,4);
+                        // lcd_stringout("(Press Green)");
+                        lcd_moveto(3,10);
+                        lcd_stringout("v");
                         print_Flag = true;
                     }
                     if(button_pressed('g') && !button_debounce)
@@ -332,6 +351,7 @@ int main(void)
                     }
                     break;
             case 8: // "Welcome to Aquaponics Controller"
+                lcd_clear();
                 lcd_moveto(1,6);
                 lcd_stringout("Welcome");
                 lcd_moveto(2,4);

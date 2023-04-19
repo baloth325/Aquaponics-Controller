@@ -1,5 +1,5 @@
 #include <stdbool.h>
-
+#include <util/delay.h>
 #include "Button_Controller.h"
 #include "LCD_Controller.h"
 
@@ -11,7 +11,8 @@ int main(void)
 {
 buttons_init();
 lcd_init();
-//lcd_clear();
+lcd_clear();
+lcd_moveto(0,1);
 lcd_stringout("Hello");
 /*
 while(1)

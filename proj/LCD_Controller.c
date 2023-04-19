@@ -43,13 +43,19 @@ extern void lcd_init()
 */
 extern void lcd_clear()
 {
+    PORTD &= ~(1<<DDD2);
     sci_out(0xFE);              // Clear the screen
     sci_out(0x51);
+    _delay_ms(2);
+    PORTD |= (1<<DDD2);
+
 }
 extern void lcd_moveto(unsigned char row, unsigned char col)
 {
+    PORTD &= ~(1<<DDD2);
     sci_out(0xfe);              // Set the cursor position
     sci_out(0x45);
+    _delay_ms(2);
     if(row == 0)
     {
       sci_out(0x00 + col);
@@ -70,6 +76,7 @@ extern void lcd_moveto(unsigned char row, unsigned char col)
     {
       sci_out(0x00);
     }
+    PORTD |= (1<<DDD2);
 }
 
 
@@ -92,8 +99,8 @@ void sci_init(void) {
     DDRD |= (1<<DDD2); PORTD |= (1<<DDD2); // PD2 is slave select for LCD
     UBRR0 = 0;
     DDRD |= (1<<DDD4); // DDR XCK = 1
-    UCSR0C |= (1<<UMSEL00); UCSR0C |= (1<<UMSEL01);  //Sets to SPI master mode
-    UCSR0C |= (1<<UCPOL0); UCSR0C |= (1<<UCPHA0); //SPI type 3
+    UCSR0C |= (1<<UMSEL00) | (1<<UMSEL01);  //Sets to SPI master mode
+    UCSR0C |= (1<<UCPOL0) | (1<<UCPHA0); //SPI type 3
     UCSR0C &= ~(1<<UDORD0); // little endian
     UCSR0B |= (1 << TXEN0);  // Turn on transmitter
     UBRR0 = MYUBRR;
@@ -109,27 +116,6 @@ void sci_init(void) {
     
 }
 
-void LCD_SendCommand(unsigned char cmd) {
-    PORTD &= ~(1<<DDD2);
-    SPDR0 = cmd; // Start transmission
-    while (!(UCSR0A & (1<<UDRE0))); // Wait for transmission complete
-    while (!(UCSR0A & (1<<TXC0))); // Wait for transmission complete
-    PORTD |= (1<<DDD2);
-    UCSR0A |= (1<<TXC0);
-}
-
-void LCD_SendData(unsigned char data) {
-    PORTD &= ~(1<<DDD2);
-    SPDR0 = data; // Start transmission
-    while (!(UCSR0A & (1<<UDRE0))); // Wait for transmission complete
-    while (!(UCSR0A & (1<<TXC0))); // Wait for transmission complete
-    PORTD |= (1<<DDD2);
-    UCSR0A |= (1<<TXC0);
-}
-
-
-
-
 /*
   sci_out - Output a byte to SCI port
 */
@@ -138,11 +124,12 @@ void sci_out(char ch)
     /* Wait for empty transmit buffer */
 
     
-    PORTD &= ~(1<<DDD2);
-    UDR0 = ch;
+    // PORTD &= ~(1<<DDD2);
+    
     while (!(UCSR0A & (1<<UDRE0)));
+    UDR0 = ch;
     while (!(UCSR0A & (1<<TXC0)));
-    PORTD |= (1<<DDD2);
+    // PORTD |= (1<<DDD2);
     UCSR0A |= (1<<TXC0);
 }
 
@@ -156,7 +143,9 @@ void sci_outs(char *s)
     char ch;
     while ((ch = *s++) != '\0')
         {
-        sci_out(ch);
+          PORTD &= ~(1<<DDD2);
+          sci_out(ch);
+          PORTD |= (1<<DDD2);
         }
 
 }
