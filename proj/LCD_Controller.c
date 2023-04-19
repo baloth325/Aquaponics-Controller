@@ -23,7 +23,7 @@
 */
 extern void lcd_init()
 {
-  _delay_ms(100);
+    _delay_ms(100);
 
     sci_init();                 // Initialize the SCI port
 
@@ -94,20 +94,41 @@ void sci_init(void) {
     DDRD |= (1<<DDD4); // DDR XCK = 1
     UCSR0C |= (1<<UMSEL00); UCSR0C |= (1<<UMSEL01);  //Sets to SPI master mode
     UCSR0C |= (1<<UCPOL0); UCSR0C |= (1<<UCPHA0); //SPI type 3
-    UCSR0C &= ~(1<<UDORD0 ); // little endian
+    UCSR0C &= ~(1<<UDORD0); // little endian
     UCSR0B |= (1 << TXEN0);  // Turn on transmitter
     UBRR0 = MYUBRR;
 
     ///toggle SS once to synchronize the LCD
     //UBRR0 = MYUBRR;          // Set baud rate
-    while (!(UCSR0A & (1<<UDRE0)));
-    PORTD &= ~(1<<DDD2);
-    UDR0 = 0xFF;
-    while (!(UCSR0A & (1<<TXC0)));
-    PORTD |= (1<<DDD2);
-    UCSR0A |= (1<<TXC0);
+    // while (!(UCSR0A & (1<<UDRE0)));
+    // PORTD &= ~(1<<DDD2);
+    // UDR0 = 0xFF;
+    // while (!(UCSR0A & (1<<TXC0)));
+    // PORTD |= (1<<DDD2);
+    // UCSR0A |= (1<<TXC0);
     
 }
+
+void LCD_SendCommand(unsigned char cmd) {
+    PORTD &= ~(1<<DDD2);
+    SPDR0 = cmd; // Start transmission
+    while (!(UCSR0A & (1<<UDRE0))); // Wait for transmission complete
+    while (!(UCSR0A & (1<<TXC0))); // Wait for transmission complete
+    PORTD |= (1<<DDD2);
+    UCSR0A |= (1<<TXC0);
+}
+
+void LCD_SendData(unsigned char data) {
+    PORTD &= ~(1<<DDD2);
+    SPDR0 = data; // Start transmission
+    while (!(UCSR0A & (1<<UDRE0))); // Wait for transmission complete
+    while (!(UCSR0A & (1<<TXC0))); // Wait for transmission complete
+    PORTD |= (1<<DDD2);
+    UCSR0A |= (1<<TXC0);
+}
+
+
+
 
 /*
   sci_out - Output a byte to SCI port
@@ -116,9 +137,10 @@ void sci_out(char ch)
 {
     /* Wait for empty transmit buffer */
 
-    while (!(UCSR0A & (1<<UDRE0)));
+    
     PORTD &= ~(1<<DDD2);
     UDR0 = ch;
+    while (!(UCSR0A & (1<<UDRE0)));
     while (!(UCSR0A & (1<<TXC0)));
     PORTD |= (1<<DDD2);
     UCSR0A |= (1<<TXC0);

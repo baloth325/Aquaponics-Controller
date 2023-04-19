@@ -32,30 +32,47 @@
 #include "Waterswitch_Controller.h"
 
 volatile uint32_t timer_count = 0;
-volatile int state = 8;
+volatile unsigned char state = 0;
 
 //#define CLOCK_PRESCALAR 0x00    //must be in hex 2,4,8,16,32,64,128,or 256 following page60 in Atmel Documentation: Comment line if no prescalar desired
 
 
 #ifdef CLOCK_PRESCALAR
-#define CLOCK_SPEED(CLOCK_PRESCALAR) (int)8000000/CLOCK_PRESCALAR
+    #ifndef F_CPU
+    #define F_CPU 7372800
+    #endif
+    #define CLOCK_SPEED(CLOCK_PRESCALAR) (int)F_CPU/CLOCK_PRESCALAR4
 #else
-#define CLOCK_SPEED 8000000
+    #ifndef F_CPU
+    #define F_CPU 7372800
+    #endif
+    #define CLOCK_SPEED F_CPU
 #endif
 
 ISR(TIMER1_COMPA_vect) {
     // Increment the timer count
     timer_count++;
+    // char buffer[20];
+    char i;
     if(state == 9)
     {
-        if(timer_count == 2)
+        if(timer_count == 5)
         {
-            turn_on_LED();
-            _delay_ms(100);
-            turn_off_LED();
+            // lcd_clear();
+            // lcd_moveto(1,6);
+            // sprintf(buffer, "%d", state);
+            // lcd_stringout(buffer);
+            turn_on_red_LED();
+            turn_on_heater();
+            for(i = 0; i < 4; i++)
+            {
+                _delay_ms(250);
+            }
+            turn_off_red_LED();
+            turn_off_heater();
             timer_count = 0;
-        }
-    } 
+        }   
+    }   
 }
 
 void setup()
@@ -71,7 +88,7 @@ void setup()
     LED_init();
     buttons_init();
     TCCR1B |= (1 << WGM12) | (1 << CS12);
-    OCR1A = 31249; // Compare value for 1 hour with 8 MHz clock and 1024 prescaler
+    OCR1A = 31249; // Compare value for 1 hour with 8 MHz clock and 1024 prescalers
     TIMSK1 |= (1 << OCIE1A); // Enable timer compare interrupt
     return;
 }
@@ -83,8 +100,8 @@ int main(void)
     bool print_Flag = false;
     bool button_debounce = false;
     setup();
-
-    
+    state = 8;
+ 
 
     while (1) {
         switch(state){
@@ -292,6 +309,7 @@ int main(void)
                         sci_out(0xDA);
                         print_Flag = true;
                     }
+                    break;
             case 7: // "Go into sleep mode"
                 if (!print_Flag)
                     {
@@ -306,12 +324,11 @@ int main(void)
                         sci_out(0xDA);
                         print_Flag = true;
                     }
-
                     if(button_pressed('g') && !button_debounce)
                     {
-                        state = 9;
-                        print_Flag = false;
-                        button_debounce = true;
+                            state = 9;
+                            print_Flag = false;
+                            button_debounce = true;
                     }
                     break;
             case 8: // "Welcome to Aquaponics Controller"
@@ -320,7 +337,7 @@ int main(void)
                 lcd_moveto(2,4);
                 lcd_stringout("To Aquaponics");
                 char i;
-                for(i = 0; i<2; i++)
+                for(i = 0; i<8; i++)
                 {
                     _delay_ms(250);
                 }
@@ -330,9 +347,11 @@ int main(void)
                 //     _delay_ms(250);
                 // }
                 state = 0;
+                break;
             case 9:
                 lcd_clear();
                 sei();
+                break;
             /*case 9: //Print all sensor readings:
             if (!print_Flag)
                     {
