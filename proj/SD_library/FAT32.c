@@ -114,7 +114,7 @@ if(get_set == GET)
 
 *FATEntryValue = clusterEntry;   //for setting new value in cluster entry in FAT
 
-SD_writeSingleBlock(FATEntrySector);
+SD_writeSingleBlock(FATEntrySector, clusterEntry, &token);
 
 return (0);
 }
@@ -132,8 +132,8 @@ unsigned long getSetFreeCluster(unsigned char totOrNext, unsigned char get_set, 
 {
 struct FSInfo_Structure *FS = (struct FSInfo_Structure *) &buffer;
 unsigned char error;
-
-SD_readSingleBlock(unusedSectors + 1);
+uint8_t buffer[512], token;
+SD_readSingleBlock(unusedSectors + 1, buffer, &token );
 
 if((FS->leadSignature != 0x41615252) || (FS->structureSignature != 0x61417272) || (FS->trailSignature !=0xaa550000))
   return 0xffffffff;
@@ -152,7 +152,7 @@ if((FS->leadSignature != 0x41615252) || (FS->structureSignature != 0x61417272) |
    else // when totOrNext = NEXT_FREE
 	  FS->nextFreeCluster = FSEntry;
  
-   error = SD_writeSingleBlock(unusedSectors + 1);	//update FSinfo
+   error = SD_writeSingleBlock(unusedSectors + 1, buffer, &token);	//update FSinfo
  }
  return 0xffffffff;
 }
@@ -172,14 +172,14 @@ unsigned int i;
 unsigned char j;
 
 cluster = rootCluster; //root cluster
-
+uint8_t buffer[512], token;
 while(1)
 {
    firstSector = getFirstSector (cluster);
 
    for(sector = 0; sector < sectorPerCluster; sector++)
    {
-     SD_readSingleBlock (firstSector + sector);
+     SD_readSingleBlock (firstSector + sector, buffer, &token);
 	
 
      for(i=0; i<bytesPerSector; i+=32)
@@ -189,7 +189,6 @@ while(1)
         if(dir->name[0] == EMPTY) //indicates end of the file list of the directory
 		{
 		  if(flag == DELETE)
-		      transmitString_F(PSTR("File does not exist!"));
 		  return 0;   
 		}
 		if((dir->name[0] != DELETED) && (dir->attrib != ATTR_LONG_NAME))
@@ -210,15 +209,12 @@ while(1)
 			  }	
 			  else    //when flag = DELETE
 			  {
-			     TX_NEWLINE;
-				 transmitString_F(PSTR("Deleting.."));
-				 TX_NEWLINE;
-				 TX_NEWLINE;
 				 firstCluster = (((unsigned long) dir->firstClusterHI) << 16) | dir->firstClusterLO;
                 
 				 //mark file as 'deleted' in FAT table
 				 dir->name[0] = DELETED;    
-				 SD_writeSingleBlock (firstSector+sector);
+
+				 SD_writeSingleBlock (firstSector+sector, buffer, &token);
 				 			 
 				 freeMemoryUpdate (ADD, dir->fileSize);
 
@@ -233,7 +229,7 @@ while(1)
 			        nextCluster = getSetNextCluster (firstCluster, GET, 0);
 					getSetNextCluster (firstCluster, SET, 0);
 					if(nextCluster > 0x0ffffff6) 
-					   {transmitString_F(PSTR("File deleted!"));return 0;}
+					   {return 0;}
 					firstCluster = nextCluster;
 			  	 } 
 			  }
@@ -241,7 +237,7 @@ while(1)
           }
           else  //when flag = GET_LIST
 		  {
-		     TX_NEWLINE;
+		     
 			 for(j=0; j<11; j++)
 		     {
 			   if(j == 8) transmitByte(' ');
@@ -266,7 +262,7 @@ while(1)
    if(cluster > 0x0ffffff6)
    	 return 0;
    if(cluster == 0) 
-   {transmitString_F(PSTR("Error in getting cluster"));  return 0;}
+   {return 0;}
  }
 return 0;
 }
@@ -285,6 +281,7 @@ struct dir_Structure *dir;
 unsigned long cluster, byteCounter = 0, fileSize, firstSector;
 unsigned int k;
 unsigned char j, error;
+uint8_t buffer[512], token;
 
 error = convertFileName (fileName); //convert fileName into FAT format
 if(error) return 2;
@@ -302,25 +299,21 @@ cluster = (((unsigned long) dir->firstClusterHI) << 16) | dir->firstClusterLO;
 
 fileSize = dir->fileSize;
 
-TX_NEWLINE;
-TX_NEWLINE;
-
 while(1)
 {
   firstSector = getFirstSector (cluster);
 
   for(j=0; j<sectorPerCluster; j++)
   {
-    SD_readSingleBlock(firstSector + j);
+    SD_readSingleBlock(firstSector + j, buffer, &token);
     
 	for(k=0; k<512; k++)
     {
-      transmitByte(buffer[k]);
       if ((byteCounter++) >= fileSize ) return 0;
     }
   }
   cluster = getSetNextCluster (cluster, GET, 0);
-  if(cluster == 0) {transmitString_F(PSTR("Error in getting cluster")); return 0;}
+  if(cluster == 0) {return 0;}
 }
 return 0;
 }
@@ -378,6 +371,7 @@ unsigned char j,k, data, error, fileCreatedFlag = 0, start = 0, appendFile = 0, 
 unsigned int i, firstClusterHigh=0, firstClusterLow=0;  //value 0 is assigned just to avoid warning in compilation
 struct dir_Structure *dir;
 unsigned long cluster, nextCluster, prevCluster, firstSector, clusterCount, extraMemory;
+uint8_t buffer[512], token;
 
 j = readFile (VERIFY, fileName);
 
@@ -432,7 +426,7 @@ while(1)
    {
       start = 0;
 	  startBlock = getFirstSector (cluster) + sector;
-	  SD_readSingleBlock (startBlock);
+	  SD_readSingleBlock (startBlock, buffer, &token );
 	  i = fileSize % bytesPerSector;
 	  j = sector;
    }
@@ -455,7 +449,7 @@ while(1)
      if(i >= 512)   //though 'i' will never become greater than 512, it's kept here to avoid 
 	 {				//infinite loop in case it happens to be greater than 512 due to some data corruption
 	   i=0;
-	   error = SD_writeSingleBlock (startBlock);
+	   error = SD_writeSingleBlock (startBlock, buffer, &token);
        j++;
 	   if(j == sectorPerCluster) {j = 0; break;}
 	   startBlock++; 
@@ -467,7 +461,7 @@ while(1)
    {
       for(;i<512;i++)  //fill the rest of the buffer with 0x00
         buffer[i]= 0x00;
-   	  error = SD_writeSingleBlock (startBlock);
+   	  error = SD_writeSingleBlock (startBlock, buffer, &token);
 
       break;
    } 
@@ -494,7 +488,7 @@ if(error) { dateFAT = 0; timeFAT = 0;}
 */
 if(appendFile)  //executes this loop if file is to be appended
 {
-  SD_readSingleBlock (appendFileSector);    
+  SD_readSingleBlock (appendFileSector, buffer, &token);    
   dir = (struct dir_Structure *) &buffer[appendFileLocation]; 
 
   dir->lastAccessDate = 0;   //date of last access ignored
@@ -502,7 +496,7 @@ if(appendFile)  //executes this loop if file is to be appended
   dir->writeDate = dateFAT;  //setting new date of last write, obtained from RTC
   extraMemory = fileSize - dir->fileSize;
   dir->fileSize = fileSize;
-  SD_writeSingleBlock (appendFileSector);
+  SD_writeSingleBlock (appendFileSector, buffer, &token);
   freeMemoryUpdate (REMOVE, extraMemory); //updating free memory count in FSinfo sector;
 
   
@@ -522,7 +516,7 @@ while(1)
 
    for(sector = 0; sector < sectorPerCluster; sector++)
    {
-     SD_readSingleBlock (firstSector + sector);
+     SD_readSingleBlock (firstSector + sector, buffer, &token);
 	
 
      for(i=0; i<bytesPerSector; i+=32)
@@ -552,7 +546,7 @@ while(1)
 		  dir->firstClusterLO = firstClusterLow;
 		  dir->fileSize = fileSize;
 
-		  SD_writeSingleBlock (firstSector + sector);
+		  SD_writeSingleBlock (firstSector + sector, buffer, &token);
 		  fileCreatedFlag = 1;
 
 		  //TX_NEWLINE;
@@ -578,11 +572,10 @@ while(1)
 
       else
       {	
-	    transmitString_F(PSTR("End of Cluster Chain")); 
 	    return 1;
       }
    }
-   if(cluster == 0) {transmitString_F(PSTR("Error in getting cluster")); return 1;}
+   if(cluster == 0) {return 1;}
    
    prevCluster = cluster;
  }
@@ -601,12 +594,13 @@ unsigned long searchNextFreeCluster (unsigned long startCluster)
 {
   unsigned long cluster, *value, sector;
   unsigned char i;
+  uint8_t buffer[512], token;
     
 	startCluster -=  (startCluster % 128);   //to start with the first file in a FAT sector
     for(cluster =startCluster; cluster <totalClusters; cluster+=128) 
     {
       sector = unusedSectors + reservedSectorCount + ((cluster * 4) / bytesPerSector);
-      SD_readSingleBlock(sector);
+      SD_readSingleBlock(sector, buffer, &token);
       for(i=0; i<128; i++)
       {
        	 value = (unsigned long *) &buffer[i*4];
