@@ -25,7 +25,7 @@ int main(void)
 	_delay_ms(250);
 	_delay_ms(250);
 
-
+	writeFile("test.txt", "This is a test");
 
 
 

@@ -365,7 +365,7 @@ return 0;
 //Arguments: pointer to the file name
 //return: none
 //************************************************************************************
-unsigned char writeFile (unsigned char *fileName)
+unsigned char writeFile (unsigned char *fileName, uint8_t *dataString)
 {
 unsigned char j,k, data, error, fileCreatedFlag = 0, start = 0, appendFile = 0, sector=0;
 unsigned int i, firstClusterHigh=0, firstClusterLow=0;  //value 0 is assigned just to avoid warning in compilation
@@ -407,8 +407,7 @@ else
   cluster = searchNextFreeCluster(cluster);
    if(cluster == 0)
    {
-      TX_NEWLINE;
-      transmitString_F(PSTR(" No free cluster!"));
+      ;
 	  return 1;
    }
   getSetNextCluster(cluster, SET, EOF);   //last cluster of the file, marked EOF
