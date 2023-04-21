@@ -14,7 +14,7 @@ void SPI_init(uint16_t initParams)
     UBRR0 = 0;
     DDRD |= (1<<DDD4); // DDR XCK = 1
     UCSR0C |= (1<<UMSEL00); UCSR0C |= (1<<UMSEL01);  //Sets to SPI master mode
-    UCSR0C |= (1<<UCPOL0); UCSR0C |= (1<<UCPHA0); //SPI type 3
+    UCSR0C &= ~(1<<UCPOL0); UCSR0C &= ~(1<<UCPHA0); //SPI type 0
     UCSR0C &= ~(1<<UDORD0); // little endian
     UCSR0B |= (1 << TXEN0);  // Turn on transmitter
     UBRR0 = 47;
