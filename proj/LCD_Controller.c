@@ -50,6 +50,24 @@ extern void lcd_clear()
     PORTD |= (1<<DDD2);
 
 }
+extern void lcd_on()
+{
+    PORTD &= ~(1<<DDD2);
+    sci_out(0xFE);              // turn on lcd
+    sci_out(0x41);
+    _delay_ms(2);
+    PORTD |= (1<<DDD2);
+
+}
+extern void lcd_off()
+{
+    PORTD &= ~(1<<DDD2);
+    sci_out(0xFE);              // turn off lcd
+    sci_out(0x42);
+    _delay_ms(2);
+    PORTD |= (1<<DDD2);
+
+}
 extern void lcd_moveto(unsigned char row, unsigned char col)
 {
     PORTD &= ~(1<<DDD2);

@@ -57,6 +57,8 @@ int Temp_read()
     {}
 
     int data;
+    int temp;
     data = ADC;
-    return data;
+    temp = data / 32;
+    return temp;
 }
