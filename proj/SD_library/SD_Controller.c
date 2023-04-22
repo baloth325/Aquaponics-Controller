@@ -1,5 +1,7 @@
 //code coppied from http://www.rjhcoding.com/avrc-sd-interface-3.php
 
+#include <avr/io.h>
+#include <util/delay.h>
 
 
 void SPI_init()
