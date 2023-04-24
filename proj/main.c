@@ -1,23 +1,3 @@
-/*************************************************************
-*       at328-0.c - Demonstrate simple I/O functions of ATmega328
-*
-*       Program loops turning PC0 on and off as fast as possible.
-*
-* The program should generate code in the loop consisting of
-*   LOOP:   SBI  PORTC,0        (2 cycles)
-*           CBI  PORTC,0        (2 cycles)
-*           RJMP LOOP           (2 cycles)
-*
-* PC0 will be low for 4 / XTAL freq
-* PC0 will be high for 2 / XTAL freq
-* A 9.8304MHz clock gives a loop period of about 600 nanoseconds.
-*
-* Revision History
-* Date     Author      Description
-* 09/14/12 A. Weber    Initial Release
-* 11/18/13 A. Weber    Renamed for ATmega328P
-*************************************************************/
-
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stdbool.h>
@@ -32,12 +12,18 @@
 #include "Waterswitch_Controller.h"
 #include "TDS_Controller.h"
 #include "PH_Controller.h"
+#include "SD2/diskio.h"
+#include "SD2/pff.h"
+#include "SD2/pffconf.h"
+#include "SD2/sdcard.h"
+#include "SD2/spi.h"
 
 volatile uint32_t timer_count = 0;
 volatile unsigned char state = 0;
 // volatile bool print_Flag = false;
 volatile bool interruptEnabled= true;
 volatile uint8_t cycle = 5;
+volatile long int filepointer = 0;
 // volatile char TDS_buffer [20];
 
 
@@ -87,21 +73,50 @@ ISR(TIMER1_COMPA_vect) {
     {
         if(timer_count == cycle)
         {
+            uint8_t i, bw;
+            SPI_init();
+            FATFS SD;
+            for(i=0; i<8; i++) _delay_ms(250);
+            i = pf_mount(&SD);
+
+
+
+            lcd_init();
             lcd_clear();
             tds = TDS_read();
             lcd_moveto(0,1);
-            sprintf(TDS_buffer, "TDS = %d", tds);
+            sprintf(TDS_buffer, "TDS = %d, ", tds);
             lcd_stringout(TDS_buffer);
+            SPI_init();
+            i = pf_open("TEST.TXT");
+            i = pf_lseek(filepointer);
+            pf_write(TDS_buffer, 12, &bw);
+            pf_write(0, 0, &bw);
+            filepointer += 12;
 
+            lcd_init();
             ph = PH_read();
             lcd_moveto(1,1);
-            sprintf(PH_buffer, "PH = %d", ph);
+            sprintf(PH_buffer, "PH = %d, ", ph);
             lcd_stringout(PH_buffer);
+            SPI_init();
+            i = pf_open("TEST.TXT");
+            i = pf_lseek(filepointer);
+            pf_write(PH_buffer, 12, &bw);
+            pf_write(0, 0, &bw);
+            filepointer += 12;
+
 
             temp = Temp_read();
             lcd_moveto(2,1);
-            sprintf(TEMP_buffer, "Temp = %d celcius", temp);
+            sprintf(TEMP_buffer, "Temp = %d celcius, ", temp);
             lcd_stringout(TEMP_buffer);
+            SPI_init();
+            i = pf_open("TEST.TXT");
+            i = pf_lseek(filepointer);
+            pf_write(TEMP_buffer, 21, &bw);
+            pf_write(0, 0, &bw);
+            filepointer += 21;
 
             turn_on_chem_filter();
             turn_on_heater();
@@ -116,7 +131,7 @@ ISR(TIMER1_COMPA_vect) {
             lcd_clear();
             timer_count = 0;
         } 
-        if(tds > 150)
+        if((tds > 150)|| (ph != 7))
         {
             turn_on_bio_filter();
         }
@@ -464,16 +479,30 @@ int main(void)
                 break;
             case 10:
                 lcd_clear();
-                tds = TDS_read();
-                lcd_moveto(0,1);
-                sprintf(TDS_buffer, "TDS = %d", tds);
-                lcd_stringout(TDS_buffer);
-
+                
                 ph = PH_read();
                 lcd_moveto(1,1);
                 sprintf(PH_buffer, "PH = %d", ph);
                 lcd_stringout(PH_buffer);
 
+                _delay_ms(250);
+
+                tds = TDS_read();
+                lcd_moveto(0,1);
+                sprintf(TDS_buffer, "TDS = %d", tds);
+                lcd_stringout(TDS_buffer);
+                _delay_ms(250);
+
+
+                i = pf_open("TEST.TXT");
+                i = pf_lseek(filepointer);
+                uint8_t bw;
+                pf_write(TDS_buffer, 12, &bw);
+                pf_write(0, 0, &bw);
+                filepointer += 12;
+
+
+                _delay_ms(250);
                 temp = Temp_read();
                 lcd_moveto(2,1);
                 sprintf(TEMP_buffer, "Temp = %d celcius", temp);

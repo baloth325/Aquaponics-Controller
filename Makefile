@@ -1,7 +1,7 @@
 DEVICE     = atmega328p
 CLOCK      = 7372800
 PROGRAMMER = -c usbtiny -P usb
-OBJECTS    = ./proj/main.c  ./proj/LCD_Controller.c ./proj/pump_Controller.c ./proj/LED_Controller.c ./proj/Button_Controller.c ./proj/TDS_Controller.c ./proj/PH_Controller.c
+OBJECTS    = ./proj/main.c  ./proj/LCD_Controller.c ./proj/pump_Controller.c ./proj/LED_Controller.c ./proj/Button_Controller.c ./proj/TDS_Controller.c ./proj/PH_Controller.c ./proj/SD2/diskio.c ./proj/SD2/pff.c ./proj/SD2/sdcard.c ./proj/SD2/spi.c
 FUSES      = -U hfuse:w:0xd9:m -U lfuse:w:0xe0:m
 BIN_FOLDER = ./bin
 PROJ_FOLDER = ./proj
@@ -106,6 +106,12 @@ PH_TEST:
 	avr-objcopy -j .text -j .data -O ihex $(BIN_FOLDER)/PH.elf $(BIN_FOLDER)/PH.hex
 	avr-size --format=avr --mcu=$(DEVICE) $(BIN_FOLDER)/PH.elf
 	$(AVRDUDE) -U flash:w:$(BIN_FOLDER)/PH.hex:i
+SD_TEST: 
+	$(COMPILE) -o $(BIN_FOLDER)/SD.elf ./proj/SD_library/Sd_tester.c ./proj/SD_library/SD_Controller.c ./proj/SD_library/FAT32.c 
+	rm -f $(BIN_FOLDER)/SD.hex
+	avr-objcopy -j .text -j .data -O ihex $(BIN_FOLDER)/SD.elf $(BIN_FOLDER)/SD.hex
+	avr-size --format=avr --mcu=$(DEVICE) $(BIN_FOLDER)/SD.elf
+	$(AVRDUDE) -U flash:w:$(BIN_FOLDER)/SD.hex:i
 
 cpp:
 	$(COMPILE) -E main.c
