@@ -36,7 +36,8 @@
 volatile uint32_t timer_count = 0;
 volatile unsigned char state = 0;
 // volatile bool print_Flag = false;
-volatile bool interruptEnabled = true;
+volatile bool interruptEnabled= true;
+volatile uint8_t cycle = 5;
 // volatile char TDS_buffer [20];
 
 
@@ -60,34 +61,28 @@ ISR(TIMER1_COMPA_vect) {
     timer_count++;
     // char buffer[20];
     char i;
-    unsigned int tds;
-    char TDS_buffer [20];
-    unsigned int cycle = 5;
-    if(state == 11)
-    {
-        if(button_pressed('u'))
-        {
-            cycle = 3;
-        }else if(button_pressed('d'))
-        {
-            cycle = 5;
-        }else if(button_pressed('g'))
-        {
-            cycle = 10;
-        }
-    }
+    // unsigned int tds;
+    // char TDS_buffer [20];
+    // unsigned int cycle = 5;
+    // if(state == 11)
+    // {
+    //     if(button_pressed('u'))
+    //     {
+    //         cycle = 3;
+    //     }
+    //     else if(button_pressed('d'))
+    //     {
+    //         cycle = 5;
+    //     }
+    //     else if(button_pressed('g'))
+    //     {
+    //         cycle = 10;
+    //     }
+    // }
     if(state == 9)
     {
         if(timer_count == cycle)
         {
-            // lcd_clear();
-            // lcd_moveto(1,6);
-            // sprintf(buffer, "%d", state);
-            // lcd_stringout(buffer);
-            // tds = TDS_read();
-            // lcd_moveto(0,5);
-            // sprintf(TDS_buffer, "TDS = %d", tds);
-            // lcd_stringout(TDS_buffer);
             turn_on_chem_filter();
             turn_on_heater();
             turn_on_pump();
@@ -104,10 +99,9 @@ ISR(TIMER1_COMPA_vect) {
         
         if(button_pressed('a'))  
         {
-            // lcd_moveto(0,10);
-            // lcd_stringout("^");
             interruptEnabled = false;
             state = 8;
+            timer_count = 0;
         }
     }   
 }
@@ -144,6 +138,7 @@ int main(void)
     bool button_debounce = false;
     setup();
     state = 8;
+    // cycle = 5;
     unsigned int tds;
     char TDS_buffer [20];
     unsigned int ph;
@@ -432,15 +427,10 @@ int main(void)
                     _delay_ms(250);
                 }
                 lcd_clear();
-                // for(i = 0; i<4; i++)
-                // {
-                //     _delay_ms(250);
-                // }
                 state = 0;
                 break;
             case 9:
                 lcd_clear();
-                // lcd_off();
                 interruptEnabled = true;
                 break;
             case 10:
@@ -486,13 +476,62 @@ int main(void)
                     state = 1;
                     print_Flag = false;
                     button_debounce = true;
-                }else if(button_pressed('u') && !button_debounce ||
-                         button_pressed('d') && !button_debounce ||
-                         button_pressed('g') && !button_debounce)
+                }
+                else if(button_pressed('u') && !button_debounce)
                 {
-                    interruptEnabled = true;
+                    lcd_clear();
+                    lcd_moveto(1,0);
+                    lcd_stringout("timing set to 10mins");
+                    cycle = 3;
+                    char i;
+                    for(i = 0; i<8; i++)
+                    {
+                        _delay_ms(250);
+                    }
+                    state = 1;
+                    print_Flag = false;
+                    button_debounce = true;
+                    // timer_count = 0;
+
+                    // interruptEnabled = true;
+                }
+                else if(button_pressed('d') && !button_debounce)
+                {
+                    lcd_clear();
+                    lcd_moveto(1,0);
+                    lcd_stringout("timing set to hourly");
+                    cycle = 5;
+                    char i;
+                    for(i = 0; i<8; i++)
+                    {
+                        _delay_ms(250);
+                    }
+                    state = 1;
+                    print_Flag = false;
+                    button_debounce = true;
+                    // timer_count = 0;
+
+                    // interruptEnabled = true;
+                }
+                else if(button_pressed('g') && !button_debounce)
+                {
+                    lcd_clear();
+                    lcd_moveto(1,0);
+                    lcd_stringout("timing set to daily");
+                    cycle = 10;
+                    char i;
+                    for(i = 0; i<8; i++)
+                    {
+                        _delay_ms(250);
+                    }
+                    state = 1;
+                    print_Flag = false;
+                    button_debounce = true;
+                    // timer_count = 0;
+                    // interruptEnabled = true;
                 }
                 break;
+            // case 12:
         }
 
 

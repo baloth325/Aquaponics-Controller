@@ -3,11 +3,11 @@
 
 void pump_init()
 {
-    DDRB |= 1 << DDB1;
+    DDRB |= (1 << PB1);
 }
 void turn_on_pump()
 {
-    PORTB |= 1 << PB1;
+    PORTB |= (1 << PB1);
 }
 void turn_off_pump()
 {
