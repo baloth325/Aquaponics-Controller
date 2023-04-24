@@ -65,7 +65,7 @@ ISR(TIMER1_COMPA_vect) {
     char TDS_buffer [20];
     unsigned int ph;
     char PH_buffer [20];
-    unsigned int temp;
+    unsigned int temp = 0;
     char TEMP_buffer [20];
     // unsigned int cycle = 5;
     // if(state == 11)
@@ -120,10 +120,10 @@ ISR(TIMER1_COMPA_vect) {
         {
             turn_on_bio_filter();
         }
-        if(temp < 20)
-        {
-            turn_on_heater();
-        }        
+        // if(temp < 20)
+        // {
+        //     turn_on_heater();
+        // }        
         if(button_pressed('a'))  
         {
             interruptEnabled = false;
