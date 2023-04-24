@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "sdcard.h"
 #include "spi.h"
+#include "../LCD_Controller.h"
 
 /*******************************************************************************
  Initialize SD card
@@ -14,12 +15,14 @@ uint8_t SD_init()
 
     SD_powerUpSeq();
 
+
+
     while((res[0] = SD_goIdleState()) != SD_IN_IDLE_STATE)
     {
         cmdAttempts++;
         if(cmdAttempts == CMD0_MAX_ATTEMPTS)
         {
-            return SD_ERROR;
+            return 1;
         }
     }
 
@@ -28,12 +31,12 @@ uint8_t SD_init()
     SD_sendIfCond(res);
     if(res[0] != SD_IN_IDLE_STATE)
     {
-        return SD_ERROR;
+        return 2;
     }
 
     if(res[4] != 0xAA)
     {
-        return SD_ERROR;
+        return 3;
     }
 
     cmdAttempts = 0;
@@ -41,7 +44,7 @@ uint8_t SD_init()
     {
         if(cmdAttempts == CMD55_MAX_ATTEMPTS)
         {
-            return SD_ERROR;
+            return 4;
         }
 
         res[0] = SD_sendApp();
@@ -54,7 +57,8 @@ uint8_t SD_init()
 
         cmdAttempts++;
     }
-    while(res[0] != SD_READY);
+    while((res[0] != SD_READY));
+  
 
     _delay_ms(1);
 
@@ -80,7 +84,7 @@ void SD_powerUpSeq()
 
     // send 80 clock cycles to synchronize
     uint8_t i;
-    for( i = 0; i < SD_INIT_CYCLES; i++)
+    for( i = 0; i < 80; i++)
         SPI_transfer(0xFF);
 }
 
@@ -419,7 +423,7 @@ uint8_t SD_sendOpCond()
     SPI_transfer(0xFF);
 
     // send CMD0
-    SD_command(ACMD41, ACMD41_ARG, ACMD41_CRC);
+  //  SD_command(ACMD41, ACMD41_ARG, ACMD41_CRC);
 
     // read response
     uint8_t res1 = SD_readRes1();

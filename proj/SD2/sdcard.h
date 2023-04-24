@@ -4,36 +4,44 @@
 
 #include <stdint.h>
 
-
+#define CMD0 (0x40 + 0)    /* GO_IDLE_STATE */
+#define CMD1 (0x40 + 1)    /* SEND_OP_COND (MMC) */
+#define ACMD41 (0xC0 + 41) /* SEND_OP_COND (SDC) */
+#define CMD8 (0x40 + 8)    /* SEND_IF_COND */
+#define CMD16 (0x40 + 16)  /* SET_BLOCKLEN */
+#define CMD17 (0x40 + 17)  /* READ_SINGLE_BLOCK */
+#define CMD24 (0x40 + 24)  /* WRITE_BLOCK */
+#define CMD55 (0x40 + 55)  /* APP_CMD */
+#define CMD58 (0x40 + 58)  /* READ_OCR */
 // command definitions
-#define CMD0                0
+//#define CMD0                0
 #define CMD0_ARG            0x00000000
 #define CMD0_CRC            0x94
-#define CMD8                8
+//#define CMD8                8
 #define CMD8_ARG            0x0000001AA
 #define CMD8_CRC            0x86
-#define CMD9                9
+//#define CMD9                9
 #define CMD9_ARG            0x00000000
 #define CMD9_CRC            0x00
-#define CMD10               9
+//#define CMD10               9
 #define CMD10_ARG           0x00000000
 #define CMD10_CRC           0x00
 #define CMD13               13
 #define CMD13_ARG           0x00000000
 #define CMD13_CRC           0x00
-#define CMD17               17
+//#define CMD17               17
 #define CMD17_CRC           0x00
-#define CMD24               24
+//#define CMD24               24
 #define CMD24_CRC           0x00
-#define CMD55               55
+//#define CMD55               55
 #define CMD55_ARG           0x00000000
 #define CMD55_CRC           0x00
-#define CMD58               58
+//#define CMD58               58
 #define CMD58_ARG           0x00000000
 #define CMD58_CRC           0x00
-#define ACMD41              41
+//#define ACMD41              41
 #define ACMD41_ARG          0x40000000
-#define ACMD41_CRC          0x00
+#define ACMD41_CRC          0x00 */
 
 #define SD_IN_IDLE_STATE    0x01
 #define SD_READY            0x00
@@ -48,7 +56,7 @@
 #define SD_SUCCESS              0
 #define SD_MAX_READ_ATTEMPTS    1563
 #define SD_READ_START_TOKEN     0xFE
-#define SD_INIT_CYCLES          80
+#define SD_INIT_CYCLES          10
 
 #define SD_START_TOKEN          0xFE
 #define SD_ERROR_TOKEN          0x00

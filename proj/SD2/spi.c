@@ -8,7 +8,7 @@
         Updated initialization functions
 *******************************************************************************/
 
-void SPI_init(uint16_t initParams)
+void SPI_init()
 {
     DDRD |= (1<<DDD3); PORTD |= (1<<DDD3); // PD3 is slave select for SD card
     UBRR0 = 0;
@@ -17,7 +17,8 @@ void SPI_init(uint16_t initParams)
     UCSR0C &= ~(1<<UCPOL0); UCSR0C &= ~(1<<UCPHA0); //SPI type 0
     UCSR0C &= ~(1<<UDORD0); // little endian
     UCSR0B |= (1 << TXEN0);  // Turn on transmitter
-    UBRR0 = 47;
+    UCSR0B |= (1<< RXEN0);
+    UBRR0 = 27;
 }
 
 uint8_t SPI_transfer(uint8_t data)

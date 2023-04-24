@@ -37,7 +37,8 @@
 
 #include "pff.h"		/* Petit FatFs configurations and declarations */
 #include "diskio.h"		/* Declarations of low level disk I/O functions */
-
+#include <avr/io.h>
+#include <util/delay.h>
 
 
 /*--------------------------------------------------------------------------
@@ -830,6 +831,8 @@ FRESULT pf_mount (
 		return FR_NOT_READY;
 	}
 
+	uint8_t i;
+	
 	/* Search FAT partition on the drive */
 	bsect = 0;
 	fmt = check_fs(buf, bsect);			/* Check sector 0 as an SFD format */

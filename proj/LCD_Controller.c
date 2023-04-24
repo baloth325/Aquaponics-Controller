@@ -30,7 +30,7 @@ extern void lcd_init()
     _delay_ms(250);             // Wait 500msec for the LCD to start up
     _delay_ms(250);
 
-    //lcd_clear();
+    lcd_clear();
         /*
     sci_out(0xFE);              // Change brightness
     sci_out(0x53);
