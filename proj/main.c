@@ -61,8 +61,10 @@ ISR(TIMER1_COMPA_vect) {
     timer_count++;
     // char buffer[20];
     char i;
-    // unsigned int tds;
-    // char TDS_buffer [20];
+    unsigned int tds = 0;
+    char TDS_buffer [20];
+    unsigned int ph;
+    char PH_buffer [20];
     // unsigned int cycle = 5;
     // if(state == 11)
     // {
@@ -83,6 +85,22 @@ ISR(TIMER1_COMPA_vect) {
     {
         if(timer_count == cycle)
         {
+            lcd_clear();
+            tds = TDS_read();
+            lcd_moveto(0,1);
+            sprintf(TDS_buffer, "TDS = %d", tds);
+            lcd_stringout(TDS_buffer);
+
+            ph = PH_read();
+            lcd_moveto(1,1);
+            sprintf(PH_buffer, "PH = %d", ph);
+            lcd_stringout(PH_buffer);
+
+            ph = Temp_read();
+            lcd_moveto(2,1);
+            sprintf(PH_buffer, "Temp = %d celcius", ph);
+            lcd_stringout(PH_buffer);
+
             turn_on_chem_filter();
             turn_on_heater();
             turn_on_pump();
@@ -96,6 +114,10 @@ ISR(TIMER1_COMPA_vect) {
             lcd_clear();
             timer_count = 0;
         } 
+        if(tds > 200)
+        {
+            turn_on_bio_filter();
+        }
         
         if(button_pressed('a'))  
         {
