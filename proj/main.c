@@ -65,6 +65,8 @@ ISR(TIMER1_COMPA_vect) {
     char TDS_buffer [20];
     unsigned int ph;
     char PH_buffer [20];
+    unsigned int temp;
+    char TEMP_buffer [20];
     // unsigned int cycle = 5;
     // if(state == 11)
     // {
@@ -96,10 +98,10 @@ ISR(TIMER1_COMPA_vect) {
             sprintf(PH_buffer, "PH = %d", ph);
             lcd_stringout(PH_buffer);
 
-            ph = Temp_read();
+            temp = Temp_read();
             lcd_moveto(2,1);
-            sprintf(PH_buffer, "Temp = %d celcius", ph);
-            lcd_stringout(PH_buffer);
+            sprintf(TEMP_buffer, "Temp = %d celcius", temp);
+            lcd_stringout(TEMP_buffer);
 
             turn_on_chem_filter();
             turn_on_heater();
@@ -114,11 +116,14 @@ ISR(TIMER1_COMPA_vect) {
             lcd_clear();
             timer_count = 0;
         } 
-        if(tds > 200)
+        if(tds > 150)
         {
             turn_on_bio_filter();
         }
-        
+        if(temp < 20)
+        {
+            turn_on_heater();
+        }        
         if(button_pressed('a'))  
         {
             interruptEnabled = false;
@@ -165,6 +170,8 @@ int main(void)
     char TDS_buffer [20];
     unsigned int ph;
     char PH_buffer [20];
+    unsigned int temp;
+    char TEMP_buffer [20];
 
  
 
@@ -467,10 +474,10 @@ int main(void)
                 sprintf(PH_buffer, "PH = %d", ph);
                 lcd_stringout(PH_buffer);
 
-                ph = Temp_read();
+                temp = Temp_read();
                 lcd_moveto(2,1);
-                sprintf(PH_buffer, "Temp = %d celcius", ph);
-                lcd_stringout(PH_buffer);
+                sprintf(TEMP_buffer, "Temp = %d celcius", temp);
+                lcd_stringout(TEMP_buffer);
                 _delay_ms(250);
 
                 if(button_pressed('r'))
