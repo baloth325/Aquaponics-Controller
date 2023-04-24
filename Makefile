@@ -1,7 +1,7 @@
 DEVICE     = atmega328p
 CLOCK      = 7372800
 PROGRAMMER = -c usbtiny -P usb
-OBJECTS    = ./proj/main.c  ./proj/LCD_Controller.c ./proj/pump_Controller.c ./proj/LED_Controller.c ./proj/Button_Controller.c
+OBJECTS    = ./proj/main.c  ./proj/LCD_Controller.c ./proj/pump_Controller.c ./proj/LED_Controller.c ./proj/Button_Controller.c ./proj/TDS_Controller.c ./proj/PH_Controller.c
 FUSES      = -U hfuse:w:0xd9:m -U lfuse:w:0xe0:m
 BIN_FOLDER = ./bin
 PROJ_FOLDER = ./proj

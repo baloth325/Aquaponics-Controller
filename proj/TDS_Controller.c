@@ -37,6 +37,8 @@ void TDS_init()
     {}
 
     int data;
+    int value;
     data = ADC;
-    return data;
+    value = data / 7.5;
+    return value;
 }
