@@ -1,7 +1,7 @@
 
 #include <avr/io.h>
 #include "TDS_Controller.h"
-
+#include <util/delay.h>
 
 
 void TDS_init()
@@ -30,6 +30,7 @@ void TDS_init()
     ADMUX |= (1<<MUX0);
     //ADC Enable
     ADCSRA |= (1<<ADEN);
+    // _delay_ms(250);
     //Start Conversion
     ADCSRA |= (1<<ADSC);
 
@@ -39,6 +40,7 @@ void TDS_init()
     int data;
     int value;
     data = ADC;
-    value = data / 7.5;
+    value = data / 3;
+    // _delay_ms(250);
     return value;
 }

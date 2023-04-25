@@ -73,11 +73,11 @@ ISR(TIMER1_COMPA_vect) {
     {
         if(timer_count == cycle)
         {
-            uint8_t i, bw;
-            SPI_init();
-            FATFS SD;
-            for(i=0; i<8; i++) _delay_ms(250);
-            i = pf_mount(&SD);
+            // uint8_t i, bw;
+            // SPI_init();
+            // FATFS SD;
+            // for(i=0; i<8; i++) _delay_ms(250);
+            // i = pf_mount(&SD);
 
 
 
@@ -87,36 +87,36 @@ ISR(TIMER1_COMPA_vect) {
             lcd_moveto(0,1);
             sprintf(TDS_buffer, "TDS = %d, ", tds);
             lcd_stringout(TDS_buffer);
-            SPI_init();
-            i = pf_open("TEST.TXT");
-            i = pf_lseek(filepointer);
-            pf_write(TDS_buffer, 12, &bw);
-            pf_write(0, 0, &bw);
-            filepointer += 12;
+            // SPI_init();
+            // i = pf_open("TEST.TXT");
+            // i = pf_lseek(filepointer);
+            // pf_write(TDS_buffer, 12, &bw);
+            // pf_write(0, 0, &bw);
+            // filepointer += 12;
 
-            lcd_init();
+            // lcd_init();
             ph = PH_read();
             lcd_moveto(1,1);
             sprintf(PH_buffer, "PH = %d, ", ph);
             lcd_stringout(PH_buffer);
-            SPI_init();
-            i = pf_open("TEST.TXT");
-            i = pf_lseek(filepointer);
-            pf_write(PH_buffer, 12, &bw);
-            pf_write(0, 0, &bw);
-            filepointer += 12;
+            // SPI_init();
+            // i = pf_open("TEST.TXT");
+            // i = pf_lseek(filepointer);
+            // pf_write(PH_buffer, 12, &bw);
+            // pf_write(0, 0, &bw);
+            // filepointer += 12;
 
 
             temp = Temp_read();
             lcd_moveto(2,1);
             sprintf(TEMP_buffer, "Temp = %d celcius, ", temp);
             lcd_stringout(TEMP_buffer);
-            SPI_init();
-            i = pf_open("TEST.TXT");
-            i = pf_lseek(filepointer);
-            pf_write(TEMP_buffer, 21, &bw);
-            pf_write(0, 0, &bw);
-            filepointer += 21;
+            // SPI_init();
+            // i = pf_open("TEST.TXT");
+            // i = pf_lseek(filepointer);
+            // pf_write(TEMP_buffer, 21, &bw);
+            // pf_write(0, 0, &bw);
+            // filepointer += 21;
 
             turn_on_chem_filter();
             turn_on_heater();
@@ -131,10 +131,10 @@ ISR(TIMER1_COMPA_vect) {
             lcd_clear();
             timer_count = 0;
         } 
-        if((tds > 150)|| (ph != 7))
-        {
-            turn_on_bio_filter();
-        }
+        // if((tds > 150) || (ph != 7))
+        // {
+        //     turn_on_bio_filter();
+        // }
         // if(temp < 20)
         // {
         //     turn_on_heater();
@@ -484,25 +484,24 @@ int main(void)
                 lcd_moveto(1,1);
                 sprintf(PH_buffer, "PH = %d", ph);
                 lcd_stringout(PH_buffer);
-
-                _delay_ms(250);
+                // _delay_ms(250);
 
                 tds = TDS_read();
                 lcd_moveto(0,1);
                 sprintf(TDS_buffer, "TDS = %d", tds);
                 lcd_stringout(TDS_buffer);
-                _delay_ms(250);
+                // _delay_ms(250);
 
 
-                i = pf_open("TEST.TXT");
-                i = pf_lseek(filepointer);
-                uint8_t bw;
-                pf_write(TDS_buffer, 12, &bw);
-                pf_write(0, 0, &bw);
-                filepointer += 12;
+                // i = pf_open("TEST.TXT");
+                // i = pf_lseek(filepointer);
+                // uint8_t bw;
+                // pf_write(TDS_buffer, 12, &bw);
+                // pf_write(0, 0, &bw);
+                // filepointer += 12;
 
 
-                _delay_ms(250);
+                // _delay_ms(250);
                 temp = Temp_read();
                 lcd_moveto(2,1);
                 sprintf(TEMP_buffer, "Temp = %d celcius", temp);
