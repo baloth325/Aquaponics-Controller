@@ -1,7 +1,7 @@
 
 #include <avr/io.h>
 #include "PH_Controller.h"
-
+#include <util/delay.h>
 
 
 void PH_init()
@@ -29,6 +29,7 @@ void PH_init()
     ADMUX |= (1<<MUX1);
     //ADC Enable
     ADCSRA |= (1<<ADEN);
+    // _delay_ms(250);
     //Start Conversion
     ADCSRA |= (1<<ADSC);
 
@@ -39,8 +40,10 @@ void PH_init()
     int ph;
     data = ADC;
     ph = data * 14 / 1500;
-
+    // ADCSRA &= ~(1<<ADEN);
+    // _delay_ms(250);
     return ph;
+
 }
 int Temp_read()
 {
@@ -50,6 +53,7 @@ int Temp_read()
     ADMUX |= (1<<MUX1);
     //ADC Enable
     ADCSRA |= (1<<ADEN);
+    // _delay_ms(250);
     //Start Conversion
     ADCSRA |= (1<<ADSC);
 
@@ -59,6 +63,9 @@ int Temp_read()
     int data;
     int temp;
     data = ADC;
-    temp = data / 32;
+    temp = data / 7;
+    // ADCSRA &= ~(1<<ADEN);
+    // _delay_ms(250);
     return temp;
+    // _delay_ms(250);
 }

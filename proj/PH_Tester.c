@@ -7,21 +7,23 @@ int main(void)
 {
 PH_init();
 lcd_init();
-unsigned int tds;
+unsigned int ph;
 char buffer [20];
+unsigned int temp;
+char temp_buffer [20];
 while(1)
 {
     lcd_clear();
-    tds = PH_read();
+    ph = PH_read();
     lcd_moveto(0,1);
-    sprintf(buffer, "PH = %d", tds);
+    sprintf(buffer, "PH = %d", ph);
     lcd_stringout(buffer);
     char i;
 
-    tds = Temp_read();
+    temp = Temp_read();
     lcd_moveto(1,1);
-    sprintf(buffer, "Temp = %d", tds);
-    lcd_stringout(buffer);
+    sprintf(temp_buffer, "Temp = %d", temp);
+    lcd_stringout(temp_buffer);
 
     for(i=0; i<4; i++)
     {
