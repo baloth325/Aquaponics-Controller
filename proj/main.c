@@ -25,7 +25,7 @@ volatile bool interruptEnabled= true;
 volatile uint8_t cycle = 5;
 volatile long int filepointer = 0;
 // volatile char TDS_buffer [20];
-
+volatile FATFS SD;
 
 //#define CLOCK_PRESCALAR 0x00    //must be in hex 2,4,8,16,32,64,128,or 256 following page60 in Atmel Documentation: Comment line if no prescalar desired
 
@@ -147,9 +147,61 @@ ISR(TIMER1_COMPA_vect) {
         }
     }   
 }
+uint8_t SD_write(char* buff)
+{
+    SPI_init();
+    int i;
+    for(i=0; i<8; i++) _delay_ms(250);
+    uint8_t t;
+    for(i=0; i<10; i++)
+    {
+    t = pf_mount(&SD);
+    if(t==0)
+    {
+        break;
+    }
+    }
+    if(t != 0)
+    {
+        char buffer[20];
+        sprintf(buffer, "SD mount Error=%d", t);
+        lcd_init();
+        lcd_stringout(buffer);
+        _delay_ms(250);
+        _delay_ms(250);
+        _delay_ms(250);
+    }
+    t = pf_open("TEST.TXT");
+    if(t != 0)
+    {
+        char buffer[20];
+        sprintf(buffer, "SD open Error=%d", t);
+        lcd_init();
+        lcd_stringout(buffer);
+        _delay_ms(250);
+        _delay_ms(250);
+        _delay_ms(250);
+    }
+    t = pf_lseek(0);
+    const void* point = buff;
+    UINT btw = 25;
+    UINT bw;
+    t = pf_write(point, btw, &bw);
+    if(t != 0)
+    {
+        char buffer[20];
+        sprintf(buffer, "SDwrite Error=%d", t);
+        lcd_init();
+        lcd_stringout(buffer);
+        _delay_ms(250);
+        _delay_ms(250);
+        _delay_ms(250);
+    }
+    pf_write(0, 0, &bw);
 
+    _delay_ms(250);
 
-
+}
 void setup()
 {
     #ifdef CLOCK_PRESCALAR  // auto assigns clock prescalar
@@ -157,6 +209,8 @@ void setup()
     CLKPR = CLOCK_PRESCALAR;
     #else
     #endif 
+    
+    SD_write("Aquaponics Data Controller: ");
 
     pump_init();
     lcd_init();
@@ -485,35 +539,30 @@ int main(void)
                 sprintf(PH_buffer, "PH = %d", ph);
                 lcd_stringout(PH_buffer);
 
-                _delay_ms(250);
 
                 tds = TDS_read();
                 lcd_moveto(0,1);
                 sprintf(TDS_buffer, "TDS = %d", tds);
                 lcd_stringout(TDS_buffer);
-                _delay_ms(250);
 
+                SD_write(TDS_buffer);
 
-                i = pf_open("TEST.TXT");
-                i = pf_lseek(filepointer);
-                uint8_t bw;
-                pf_write(TDS_buffer, 12, &bw);
-                pf_write(0, 0, &bw);
-                filepointer += 12;
+                lcd_init();
 
-
-                _delay_ms(250);
                 temp = Temp_read();
                 lcd_moveto(2,1);
                 sprintf(TEMP_buffer, "Temp = %d celcius", temp);
                 lcd_stringout(TEMP_buffer);
-                _delay_ms(250);
 
                 if(button_pressed('r'))
                 {
                     state = 0;
                     print_Flag = false;
                 }
+                _delay_ms(250);
+                _delay_ms(250);
+                _delay_ms(250);
+                _delay_ms(250);
                 break;
             case 11:
                 if(!print_Flag)
